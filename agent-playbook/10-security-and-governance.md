@@ -1,10 +1,15 @@
 # 10. Security and governance
 
-Execution class determines how work runs. Risk tier determines how rigorously it must be governed.
+Execution class determines how work runs. The Agent Spec risk tier is the
+governance tier and determines how rigorously the agent must be governed.
 
 ## Risk tiers
 
-Classify using consequence, reversibility, financial/legal/safety impact, data sensitivity, privilege, affected population, autonomy, exposure to untrusted content, human review, and error detectability. The highest material risk determines the tier.
+Use the [agent risk-assessment standard](13-risk-assessment.md) to identify harm
+scenarios across eight dimensions, score inherent and residual risk, apply
+mandatory floors, link controls to evidence, and record acceptance. The Agent
+Spec risk tier is the assessment's governance tier. The highest material
+scenario determines the tier; dimensions and scenarios MUST NOT be averaged.
 
 | Tier     | Typical controls                                                                                             |
 | -------- | ------------------------------------------------------------------------------------------------------------ |

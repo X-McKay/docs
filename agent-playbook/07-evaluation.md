@@ -66,6 +66,18 @@ The following are binary release gates:
 
 A weighted average MUST NOT hide failure of a hard gate.
 
+## Risk-based evaluation planning
+
+Every material risk scenario has a stable ID used as an eval tag. The scenario
+links to deterministic invariants, behavioral cases, workflow failure cases,
+production indicators, and recovery evidence appropriate to its dimensions and
+governance tier. High- and critical-risk scenarios require repeated runs and
+failure-distribution reporting when model behavior is involved.
+
+An eval report identifies covered and uncovered scenario IDs. Missing required
+coverage, failed hard gates, or absent control evidence blocks release. Passing
+average quality cannot compensate for an uncovered material risk.
+
 ## Quality metrics
 
 Select metrics appropriate to the agent:

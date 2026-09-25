@@ -4,7 +4,8 @@
 
 ### Contract and Architecture
 
-- Agent Spec, owner, purpose, non-goals, execution class, and risk tier.
+- Agent Spec, owner, purpose, non-goals, execution class, governance tier, and
+  current risk assessment.
 - Typed input, dependencies, output, tool payloads, and durable payloads.
 - Explicit package boundaries and capability allowlists.
 - Versioned prompts, policies, skills, tools, models, and releases.
@@ -27,6 +28,7 @@
 
 ### Evaluation
 
+- Material risk scenarios mapped to eval cases, control evidence, and monitoring.
 - Versioned representative dataset with provenance.
 - Deterministic hard gates for safety and authorization.
 - Calibrated rubric evaluators where necessary.

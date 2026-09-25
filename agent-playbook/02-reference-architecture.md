@@ -39,6 +39,10 @@ project/
 │   ├── workflow/
 │   ├── replay/
 │   └── security/
+├── docs/
+│   ├── risk-assessments/
+│   ├── threat-models/
+│   └── runbooks/
 └── deploy/
 ```
 
@@ -79,7 +83,7 @@ At startup, each agent produces a manifest containing:
 ```text
 agent name and version
 contract version
-execution class and risk tier
+execution class, governance tier, and risk-assessment digest
 resolved model and settings
 instruction hashes
 enabled skills, versions, and hashes

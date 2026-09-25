@@ -7,7 +7,9 @@
 Expected decisions:
 
 - Use ephemeral execution because the enabled capabilities are read-only and the request is bounded.
-- Classify the risk tier as medium because the agent accesses customer data.
+- Assess privacy, security, legal, operational, and reputational scenarios. Set
+  medium governance only if the highest inherent scenario and all mandatory
+  floors support it.
 - Return a typed `SupportResponse` with answer, evidence, proposed action, and escalation reason.
 - Allow read-only account and ticket tools.
 - Exclude the refund mutation tool; represent refund requests as proposals requiring a separate authorized path.
@@ -24,6 +26,7 @@ non_goals:
   - Issue refunds
 execution_class: ephemeral
 risk_tier: medium
+risk_assessment: docs/risk-assessments/support-agent.yaml
 input_type: SupportRequest
 dependency_type: SupportDependencies
 output_type: SupportResponse

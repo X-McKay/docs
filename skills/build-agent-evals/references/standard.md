@@ -24,6 +24,11 @@ Each case should include:
 - allowed variation;
 - redaction and retention classification.
 
+Every material scenario in the agent risk assessment should map to one or more
+case IDs, deterministic invariants where possible, and a release or monitoring
+decision. Report uncovered scenario IDs explicitly; average quality must not
+hide missing risk coverage.
+
 ## Evaluator Selection
 
 Use the least subjective evaluator that captures the claim. Deterministic evaluators should own schemas, exact values, forbidden actions, authorization, citations, and budget limits. Use model judges for relevance, tone, or completeness only with a documented rubric, representative calibration set, and periodic human review.

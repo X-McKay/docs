@@ -9,14 +9,17 @@ Produce an evidence-based launch recommendation with prioritized, actionable fin
 
 ## Workflow
 
-1. Identify scope, proposed release, owner, execution class, risk tier, users, and production environment.
+1. Identify scope, proposed release, owner, execution class, governance tier,
+   residual risk, users, and production environment.
 2. Gather evidence from code, Agent Spec, prompts, skill and tool manifests, tests, eval reports, Temporal configuration, telemetry, runbooks, and cost data.
 3. Run `agentctl validate`, `agentctl skills validate`, and `agentctl release check` when available; treat their output as evidence, not a substitute for review.
 4. Review the agent contract and typed boundaries.
 5. Review capability least privilege, authorization, side effects, idempotency, and human approval.
 6. Review Temporal determinism, retries, timeouts, payloads, history growth, replay safety, and recovery tests when durable execution is used.
 7. Review eval coverage, dataset provenance, hard gates, variance, baseline comparison, and release thresholds.
-8. Review privacy, security, observability, SLOs, cost limits, incident response, and rollback.
+8. Review the scenario-based risk assessment, regulatory screen, control
+   evidence, privacy, security, observability, SLOs, cost limits, incident
+   response, and rollback.
 9. Report findings first, ordered by severity. Include file or artifact evidence, impact, and a concrete remediation.
 10. Distinguish blockers from accepted risks and follow-up improvements.
 11. Issue `go`, `conditional go`, or `no-go` only from documented evidence.

@@ -6,6 +6,8 @@ An accountable owner completes and approves this checklist before production lau
 
 - [ ] Agent name and version are stable.
 - [ ] Owner, execution class, and risk tier are declared.
+- [ ] The Agent Spec references a current, approved risk assessment.
+- [ ] Governance tier matches the assessment and all mandatory floors.
 - [ ] Inputs, dependencies, outputs, and errors are typed.
 - [ ] Model policy and budgets are declared.
 - [ ] Governance metadata validates at startup.
@@ -36,6 +38,8 @@ An accountable owner completes and approves this checklist before production lau
 
 ## Evaluation
 
+- [ ] Every material risk scenario maps to required eval and control evidence.
+- [ ] Eval reports identify covered and uncovered risk scenario IDs.
 - [ ] Unit, component, smoke, regression, capability, and safety suites pass.
 - [ ] Trajectory and tool-argument checks pass.
 - [ ] Temporal durability scenarios pass.
@@ -66,6 +70,9 @@ An accountable owner completes and approves this checklist before production lau
 
 ## Security and governance
 
+- [ ] Prohibited-use and regulatory-applicability screening is complete.
+- [ ] Inherent and residual risk are scored with rationale and confidence.
+- [ ] Residual risks have treatments, owners, acceptance, and review dates.
 - [ ] Threat model is current.
 - [ ] Required security, privacy, domain, and risk reviews are complete.
 - [ ] Credentials, storage, filesystem, and network access are least privilege.
@@ -91,6 +98,9 @@ Version:
 Manifest ID:
 Execution class:
 Risk tier:
+Risk assessment and version:
+Maximum residual risk:
+Residual-risk acceptance:
 Engineering owner:
 Product/domain owner:
 Operations owner:

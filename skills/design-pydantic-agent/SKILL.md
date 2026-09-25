@@ -13,7 +13,7 @@ Create an explicit, typed agent package whose contract can be reviewed before im
 2. Write the behavioral contract before the prompt:
    - purpose, owner, users, and non-goals;
    - input, dependency, and output types;
-   - execution class and risk tier;
+   - execution class and risk assessment;
    - allowed skills and tools;
    - latency, quality, and cost objectives;
    - escalation and fallback behavior.
@@ -21,7 +21,9 @@ Create an explicit, typed agent package whose contract can be reviewed before im
    - `ephemeral` for bounded work without externally visible side effects;
    - `durable` for retries, timers, recovery, or externally visible side effects;
    - `human_governed` for consequential operations requiring approval.
-4. Select a risk tier from low, medium, high, or critical based on consequence, reversibility, privilege, exposure, and data sensitivity.
+4. Use `assess-agent-risk` to select a governance tier from low, medium, high,
+   or critical based on scenario-level inherent risk and mandatory floors. Keep
+   residual risk and launch decision separate.
 5. Create the standard package layout. Keep orchestration, tools, runtime skills, prompts, types, policy, and tests separate.
 6. Use `agentctl scaffold` when the repository provides it; inspect and customize every generated placeholder.
 7. Implement a factory that receives configuration and dependencies explicitly. Keep imports free of network calls and mutable runtime work.
@@ -38,7 +40,8 @@ Produce or update:
 - dependency and output models;
 - explicit skill and tool allowlists;
 - tests and an eval entry point;
-- a short decision record for execution class and risk tier.
+- a risk assessment covering execution class, governance tier, residual risk,
+  controls, evidence, and decision.
 
 Read [the design standard](references/standard.md) before changing architecture. Use [the examples](references/examples.md) when drafting a spec or package.
 

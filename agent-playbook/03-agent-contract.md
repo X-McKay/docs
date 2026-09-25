@@ -28,6 +28,7 @@ metadata:
   version: 1.0.0
   execution_class: durable
   risk_tier: medium
+  risk_assessment: docs/risk-assessments/customer-support.yaml
   data_classification: confidential
   model_policy: balanced-v1
   enabled_skills:
@@ -122,7 +123,11 @@ The factory:
 7. Supplies dependency and output types.
 8. Produces the capability manifest.
 
-Construction MUST fail when an owner, execution class, risk tier, model policy, budget, skill, or toolset is missing or invalid. Durable agents MUST fail construction if durability is absent; human-governed agents MUST fail if approval policy is absent.
+Construction MUST fail when an owner, execution class, risk tier, risk
+assessment, model policy, budget, skill, or toolset is missing or invalid. The
+Agent Spec risk tier MUST match the assessment's governance tier. Durable agents
+MUST fail construction if durability is absent; human-governed agents MUST fail
+if approval policy is absent.
 
 ## Versioning
 

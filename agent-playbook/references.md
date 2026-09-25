@@ -38,6 +38,10 @@ These sources informed the first draft. Framework behavior should be checked aga
 
 - [NIST AI Risk Management Framework](https://airc.nist.gov/airmf-resources/airmf/)
 - [NIST Generative AI Profile](https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-generative-artificial-intelligence)
+- [NIST Privacy Framework](https://www.nist.gov/privacy-framework/privacy-framework)
+- [NIST Cybersecurity Framework 2.0](https://www.nist.gov/cyberframework)
+- [ISO/IEC 23894:2023 — AI risk management](https://www.iso.org/standard/77304.html)
+- [European Commission AI Act overview](https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai)
 - [OWASP Agentic AI threats and mitigations](https://genai.owasp.org/resource/agentic-ai-threats-and-mitigations/)
 - [OWASP Securing Agentic Applications Guide](https://genai.owasp.org/resource/securing-agentic-applications-guide-1-0/)
 

@@ -1,7 +1,7 @@
 # Agent Playbook
 
-- **Status:** First draft
-- **Version:** 0.1
+- **Status:** Draft
+- **Version:** 0.2
 - **Last updated:** 2026-09-25
 
 This playbook defines a production standard for building AI agents with [PydanticAI](https://pydantic.dev/docs/ai/) and [Temporal](https://docs.temporal.io/). It treats an agent as a governed software system: a typed contract, a constrained set of capabilities, a durable execution model when required, and measurable quality, safety, reliability, and cost.
@@ -22,7 +22,8 @@ The playbook is intentionally opinionated. Teams may adopt stricter controls. Ex
 10. [Security and governance](10-security-and-governance.md)
 11. [Production readiness](11-production-readiness.md)
 12. [Reference implementation](12-reference-implementation.md)
-13. [References](references.md)
+13. [Agent risk assessment](13-risk-assessment.md)
+14. [References](references.md)
 
 ## Executable guidance
 
@@ -40,7 +41,8 @@ The terms **MUST**, **MUST NOT**, **SHOULD**, **SHOULD NOT**, and **MAY** indica
 
 Every production agent:
 
-1. Has a stable name, version, owner, execution class, and risk tier.
+1. Has a stable name, version, owner, execution class, and evidence-based risk
+   assessment.
 2. Uses a PydanticAI Agent Spec for its declarative definition and Python types for runtime validation.
 3. Explicitly allowlists its skills and tools.
 4. Classifies every tool as read-only, reversible write, or consequential write.
@@ -49,7 +51,8 @@ Every production agent:
 7. Enforces request, tool, token, time, and spend budgets.
 8. Is evaluated for outcomes, trajectory, safety, durability, latency, and cost.
 9. Emits correlated OpenTelemetry data across requests, workflows, models, skills, and tools.
-10. Cannot ship until its production-readiness checklist is complete.
+10. Cannot ship until residual risks are accepted and its production-readiness
+    checklist is complete.
 
 ## Execution classes
 
@@ -63,4 +66,9 @@ An individual workflow may elevate an agent's declared execution class, but it M
 
 ## Relationship between execution class and risk
 
-Execution class describes **how work executes**. Risk tier describes **the potential impact if the system behaves incorrectly**. They are independent: a read-only medical assistant can be ephemeral and high risk, while a reversible internal update agent can be durable and medium risk.
+Execution class describes **how work executes**. Governance tier describes the
+assurance required by the agent's inherent risk and mandatory floors. Residual
+risk describes what remains after verified controls. They are independent: a
+read-only medical assistant can be ephemeral and high risk, while a reversible
+internal update agent can be durable and medium risk. See the
+[risk-assessment standard](13-risk-assessment.md).

@@ -39,7 +39,7 @@ Record at least:
 | Purpose | Goal, users, non-goals |
 | Contract | Input, dependencies, structured output, failure types |
 | Execution | Ephemeral, durable, or human-governed; time and retry budget |
-| Risk | Low, medium, high, or critical; data and side-effect classification |
+| Risk | Assessment reference, governance tier, residual risk; data and side-effect classification |
 | Capabilities | Explicit skills, tools, and denied operations |
 | Quality | Eval suite, hard gates, target metrics |
 | Operations | SLOs, telemetry, budgets, escalation, rollback |
@@ -61,10 +61,11 @@ Choose `ephemeral` only when work is short-lived and has no externally visible s
 
 ## Risk Classification
 
-- Low: read-only, reversible, low-sensitivity work.
-- Medium: limited writes, sensitive data, or meaningful business impact.
-- High: major financial, legal, safety, privacy, or privilege impact.
-- Critical: severe or broad impact requiring independent controls and continuous assurance.
+Assess concrete harm scenarios across financial, operational, reputational,
+legal, security, privacy, regulatory, and human-impact/safety dimensions. The
+Agent Spec risk tier is the governance tier derived from the highest inherent
+scenario and mandatory floors. Residual risk is scored after verified controls
+and determines the launch decision. Do not average dimensions or scenarios.
 
 Increase controls with risk: tighter allowlists, human approval, stronger eval gates, more complete telemetry, smaller budgets, and explicit rollback.
 
@@ -75,5 +76,5 @@ Increase controls with risk: tighter allowlists, human approval, stronger eval g
 - Skill and tool allowlists are explicit.
 - Import and construction tests pass without external calls.
 - At least one happy-path and one denied or failure-path eval exists.
-- Execution class and risk tier have written rationale.
+- Execution class and evidence-linked risk assessment have written rationale.
 - Owner, SLO, budget, escalation, and rollback are named.

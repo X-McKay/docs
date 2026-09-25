@@ -1,0 +1,108 @@
+schema_version: 1
+
+assessment:
+  agent: customer-support
+  agent_version: 1.0.0
+  assessment_version: 1.0.0
+  status: draft # draft | approved | rejected | retired
+  assessed_at: 2026-09-25
+  review_by: 2027-03-25
+  prepared_by: customer-platform
+  approved_by: []
+
+scope:
+  intended_use: Investigate customer questions and propose resolutions.
+  prohibited_uses:
+    - Execute refunds without valid approval.
+    - Access records outside the authenticated tenant.
+  users:
+    - customer-support-agents
+  affected_parties:
+    - customers
+    - support-staff
+  environments:
+    - production
+  jurisdictions:
+    - replace-with-applicable-jurisdictions
+  execution_class: durable
+
+regulatory_screen:
+  prohibited_use: false
+  applicable_regimes: []
+  required_reviews:
+    - privacy
+    - security
+  governance_floors: []
+  notes: Confirm sector and jurisdiction-specific obligations before approval.
+
+classification:
+  governance_tier: medium
+  maximum_inherent_tier: medium
+  maximum_residual_tier: low
+  decision: conditional_go # go | conditional_go | no_go
+  rationale: Launch only after the linked tenant-isolation evidence passes.
+
+scenarios:
+  - id: RISK-PRIV-001
+    title: Cross-tenant customer record disclosure
+    statement: >-
+      Because retrieved content can contain adversarial instructions, the agent
+      could request a record outside the authenticated tenant, causing privacy,
+      security, legal, and reputational harm to customers and the organization.
+    primary_dimension: privacy
+    secondary_dimensions:
+      - security
+      - legal
+      - reputational
+    affected_parties:
+      - customers
+    causes:
+      - indirect prompt injection
+      - missing tenant binding at tool execution
+    inherent:
+      impact: 3
+      likelihood: 2
+      tier: medium
+      confidence: medium
+      rationale: Sensitive records are reachable, but exploitation requires a failed boundary.
+    controls:
+      - id: CTRL-AUTH-001
+        type: preventive # preventive | detective | recovery
+        description: Recheck actor and tenant authorization inside every record tool.
+        owner: customer-platform
+        evidence:
+          - tests/security/test_tenant_isolation.py
+          - evals/cases/AUTH-021.yaml
+        effectiveness: verified # planned | implemented | verified | ineffective
+    residual:
+      impact: 3
+      likelihood: 1
+      tier: medium
+      confidence: medium
+      rationale: Deterministic tenant enforcement reduces likelihood but not impact.
+    treatment: mitigate # avoid | mitigate | transfer | accept
+    owner: customer-platform
+    eval_cases:
+      - AUTH-021
+    indicators:
+      - cross_tenant_denial_count
+    alerts:
+      - any successful cross-tenant access
+    runbook: docs/runbooks/privacy-incident.md
+
+acceptance:
+  accountable_role: product-risk-owner
+  accepted_scenarios: []
+  conditions:
+    - id: CONDITION-001
+      requirement: AUTH-021 passes with zero unauthorized calls.
+      owner: customer-platform
+      due_by: 2026-10-01
+  expires_at: 2027-03-25
+  rationale: Pending approval after required evidence is complete.
+
+assumptions:
+  - Record tools enforce tenant scope independently of model output.
+
+open_questions:
+  - Which jurisdiction-specific retention obligations apply?

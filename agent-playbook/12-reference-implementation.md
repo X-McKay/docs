@@ -56,6 +56,7 @@ class AgentMetadata(BaseModel):
     version: str
     execution_class: Literal["ephemeral", "durable", "human_governed"]
     risk_tier: Literal["low", "medium", "high", "critical"]
+    risk_assessment: str
     data_classification: str
     model_policy: str
     enabled_skills: list[str]
@@ -90,7 +91,8 @@ def build_agent(settings):
     if metadata.execution_class == "human_governed":
         require_approval_policy(settings.approval_registry, spec.name)
 
-    validate_agent_contract(spec, metadata, model, skills, toolsets)
+    risk = load_risk_assessment(metadata.risk_assessment)
+    validate_agent_contract(spec, metadata, model, skills, toolsets, risk)
 
     return construct_agent(
         spec=spec,
@@ -170,7 +172,7 @@ A behavioral pull request SHOULD include:
 ```text
 agent and capability versions changed
 reason for the change
-affected execution classes and risk tiers
+affected execution classes, governance tiers, and risk scenarios
 eval suites run
 before/after quality, latency, and cost
 Temporal replay result, when applicable
@@ -182,7 +184,7 @@ rollout and rollback plan
 Teams adopting the playbook incrementally should:
 
 1. Inventory agents, owners, tools, side effects, and credentials.
-2. Assign execution classes and risk tiers.
+2. Assign execution classes and complete scenario-based risk assessments.
 3. Introduce typed inputs, outputs, and tool contracts.
 4. Move state-changing agents behind Temporal.
 5. Add hard budgets and correlated telemetry.

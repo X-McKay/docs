@@ -1,0 +1,4 @@
+interface:
+  display_name: "Assess Agent Risk"
+  short_description: "Assess multidimensional agent risk systematically"
+  default_prompt: "Use $assess-agent-risk to assess this agent and produce an evidence-linked risk profile."

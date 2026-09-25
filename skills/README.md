@@ -6,6 +6,7 @@ This library translates the [Agent Playbook](../agent-playbook/README.md) into f
 
 | Skill | Use it for |
 | --- | --- |
+| [`assess-agent-risk`](assess-agent-risk/SKILL.md) | Scenario-based inherent and residual risk assessment across eight dimensions |
 | [`design-pydantic-agent`](design-pydantic-agent/SKILL.md) | Agent Specs, typed contracts, package structure, execution classes, and risk tiers |
 | [`design-agent-capabilities`](design-agent-capabilities/SKILL.md) | Skill-versus-tool decisions, tool contracts, capability allowlists |
 | [`implement-temporal-agent`](implement-temporal-agent/SKILL.md) | Workflows, activities, retries, approvals, replay, and recovery |
