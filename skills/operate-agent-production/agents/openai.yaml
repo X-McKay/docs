@@ -1,0 +1,4 @@
+interface:
+  display_name: "Operate Agent Production"
+  short_description: "Instrument and optimize production agents"
+  default_prompt: "Use $operate-agent-production to add observability and cost controls to this agent."

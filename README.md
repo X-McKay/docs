@@ -14,3 +14,7 @@ The [Agent Playbook](agent-playbook/README.md) defines an opinionated standard f
 - Security, governance, and production readiness
 
 The current version is **v0.1 — first draft**.
+
+## Agent Development Skills
+
+The [`skills/`](skills/README.md) library turns the playbook into six portable Agent Skills for Claude Code, Codex, and compatible runtimes. It includes focused workflows for agent design, capability design, Temporal execution, evals, production operations, and readiness reviews, with examples and supporting references.

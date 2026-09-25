@@ -1,0 +1,4 @@
+interface:
+  display_name: "Build Agent Evals"
+  short_description: "Create production-grade agent evaluations"
+  default_prompt: "Use $build-agent-evals to build an evaluation suite for this agent."

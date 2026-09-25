@@ -24,6 +24,10 @@ The playbook is intentionally opinionated. Teams may adopt stricter controls. Ex
 12. [Reference implementation](12-reference-implementation.md)
 13. [References](references.md)
 
+## Executable guidance
+
+The companion [Agent Development Skills](../skills/README.md) translate this standard into focused workflows for Claude Code, Codex, and compatible Agent Skills clients.
+
 ## Normative language
 
 The terms **MUST**, **MUST NOT**, **SHOULD**, **SHOULD NOT**, and **MAY** indicate requirement strength:

@@ -20,6 +20,13 @@ These sources informed the first draft. Framework behavior should be checked aga
 - [Tool output limits](https://pydantic.dev/docs/ai/harness/tool-output-limits/) — truncate, spill, and summarize strategies.
 - [Cache-bust monitoring](https://pydantic.dev/docs/ai/harness/warn-on-cache-busts/) — observing loss of prompt-cache effectiveness.
 
+## Agent Skills clients and specification
+
+- [Agent Skills specification](https://agentskills.io/specification) — portable package structure, frontmatter rules, progressive disclosure, bundled resources, examples, and validation.
+- [Claude Code skills](https://code.claude.com/docs/en/skills) — project and personal discovery locations, invocation, and supporting files.
+- [OpenAI skills guide](https://developers.openai.com/api/docs/guides/tools-skills) — portable skill packages, discovery, supporting resources, validation, and runtime safety.
+- [OpenAI plugin skill authoring](https://developers.openai.com/plugins/build/skills) — skill resources, Codex metadata, and plugin packaging.
+
 ## Temporal
 
 - [Python SDK developer guide](https://docs.temporal.io/develop/python)

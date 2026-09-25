@@ -1,0 +1,4 @@
+interface:
+  display_name: "Design Agent Capabilities"
+  short_description: "Create governed agent skills and tools"
+  default_prompt: "Use $design-agent-capabilities to design the skills and tools for this agent."

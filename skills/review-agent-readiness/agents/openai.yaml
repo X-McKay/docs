@@ -1,0 +1,4 @@
+interface:
+  display_name: "Review Agent Readiness"
+  short_description: "Review an agent for safe production launch"
+  default_prompt: "Use $review-agent-readiness to assess whether this agent is ready for production."
