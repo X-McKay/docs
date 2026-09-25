@@ -4,6 +4,8 @@ import argparse
 import re
 from pathlib import Path
 
+from agentctl.ui import status, step, success
+
 NAME_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 PACKAGE_PATTERN = re.compile(r"^[a-z_][a-z0-9_]*$")
 
@@ -58,11 +60,21 @@ def scaffold_agent(args: argparse.Namespace) -> int:
     if args.with_evals:
         files.update(_eval_files(root, args.name, module_name))
 
-    _write_files(files, force=args.force)
-    print(f"Created {len(files)} files for {args.name} in {root}")
-    print(f"Next: agentctl validate --root {root}")
+    with status("Creating the golden-path agent package…"):
+        _write_files(files, force=args.force)
+    success(
+        "Agent scaffold created",
+        (
+            ("Agent", args.name),
+            ("Execution", args.execution_class),
+            ("Risk", args.risk_tier),
+            ("Files", str(len(files))),
+            ("Root", str(root)),
+        ),
+    )
+    step(f"Next: agentctl validate --root {root}")
     if args.with_evals:
-        print(f"Then: agentctl eval run {args.name} --root {root}")
+        step(f"Then: agentctl eval run {args.name} --root {root}")
     return 0
 
 

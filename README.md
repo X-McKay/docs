@@ -26,3 +26,27 @@ The [`skills/`](skills/README.md) library turns the playbook into six portable A
 ```bash
 scripts/agentctl --help
 ```
+
+## Reproducible Development
+
+The repository uses one root [uv](https://docs.astral.sh/uv/) workspace and
+lockfile for Python dependencies, plus a pinned [Nix](https://nixos.org/) flake
+for Python, uv, Just, ShellCheck, Git, and Nix formatting across Linux and
+macOS. uv pins the application, Rich terminal stack, and Ruff.
+
+```bash
+nix develop
+just bootstrap
+just check
+```
+
+Without Nix, install uv and run the same locked workflow directly:
+
+```bash
+uv sync --locked
+uv run --locked agentctl --help
+uv run --locked python -m unittest discover -s tools/agentctl/tests
+```
+
+Use `uv lock --check` and `nix flake check` in CI to reject dependency or flake
+drift.

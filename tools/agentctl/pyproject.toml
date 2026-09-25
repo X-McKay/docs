@@ -4,11 +4,15 @@ build-backend = "hatchling.build"
 
 [project]
 name = "agentctl-playbook"
-version = "0.1.0"
+version = "0.2.0"
 description = "Golden-path development and conformance tooling for the Agent Playbook"
 readme = "README.md"
-requires-python = ">=3.11"
-dependencies = ["PyYAML>=6.0"]
+requires-python = ">=3.12,<3.15"
+dependencies = [
+  "PyYAML>=6.0,<7",
+  "rich>=14.2,<15",
+  "rich-argparse>=1.7,<2",
+]
 
 [project.scripts]
 agentctl = "agentctl.cli:main"

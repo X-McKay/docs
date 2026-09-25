@@ -1,23 +1,82 @@
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 from pathlib import Path
 
+from rich.console import Console
+from rich_argparse import RichHelpFormatter
+
+from agentctl import __version__
 from agentctl.evals import run_eval_command
 from agentctl.release import check_release
 from agentctl.scaffold import scaffold_agent
 from agentctl.skills import validate_skills
+from agentctl.ui import configure, console_options, error, json_error
 from agentctl.validation import validate_project
+
+_help_no_color = False
+_help_force_color = False
+
+
+def _resolve_color_preferences(raw_args: list[str]) -> tuple[bool, bool]:
+    if "--no-color" in raw_args:
+        return True, False
+    if "--force-color" in raw_args:
+        return False, True
+    if "NO_COLOR" in os.environ:
+        return True, False
+    force_color = os.environ.get("FORCE_COLOR")
+    return False, force_color not in (None, "", "0")
+
+
+def _rich_formatter(prog: str) -> RichHelpFormatter:
+    return RichHelpFormatter(
+        prog,
+        console=Console(
+            **console_options(no_color=_help_no_color, force_color=_help_force_color)
+        ),
+    )
+
+
+class AgentArgumentParser(argparse.ArgumentParser):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("formatter_class", _rich_formatter)
+        super().__init__(*args, **kwargs)
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
+    RichHelpFormatter.styles.update(
+        {
+            "argparse.args": "bold bright_cyan",
+            "argparse.groups": "bold bright_magenta",
+            "argparse.help": "white",
+            "argparse.metavar": "bright_blue",
+            "argparse.text": "dim",
+        }
+    )
+    parser = AgentArgumentParser(
         prog="agentctl",
         description="Build and verify agents against the Agent Playbook.",
+        epilog="Examples: agentctl scaffold support-agent --owner platform · agentctl validate · agentctl skills validate skills",
     )
-    parser.add_argument("--version", action="version", version="%(prog)s 0.1.0")
-    commands = parser.add_subparsers(dest="command", required=True)
+    parser.add_argument(
+        "--version", action="version", version=f"%(prog)s {__version__}"
+    )
+    appearance = parser.add_mutually_exclusive_group()
+    appearance.add_argument(
+        "--no-color", action="store_true", help="disable ANSI color output"
+    )
+    appearance.add_argument(
+        "--force-color", action="store_true", help="emit ANSI colors when redirected"
+    )
+    parser.add_argument(
+        "--no-animations", action="store_true", help="disable interactive spinners"
+    )
+    commands = parser.add_subparsers(
+        dest="command", required=True, parser_class=AgentArgumentParser
+    )
 
     scaffold = commands.add_parser(
         "scaffold", help="create a golden-path agent package"
@@ -45,7 +104,9 @@ def build_parser() -> argparse.ArgumentParser:
     validate.add_argument("--format", choices=("text", "json"), default="text")
 
     skills = commands.add_parser("skills", help="work with Agent Skills packages")
-    skills_commands = skills.add_subparsers(dest="skills_command", required=True)
+    skills_commands = skills.add_subparsers(
+        dest="skills_command", required=True, parser_class=AgentArgumentParser
+    )
     skills_validate = skills_commands.add_parser(
         "validate", help="validate Agent Skills packages"
     )
@@ -55,7 +116,9 @@ def build_parser() -> argparse.ArgumentParser:
     skills_validate.add_argument("--run-skills-ref", action="store_true")
 
     eval_parser = commands.add_parser("eval", help="run standardized evaluations")
-    eval_commands = eval_parser.add_subparsers(dest="eval_command", required=True)
+    eval_commands = eval_parser.add_subparsers(
+        dest="eval_command", required=True, parser_class=AgentArgumentParser
+    )
     eval_run = eval_commands.add_parser("run", help="run an eval adapter")
     eval_run.add_argument("agent")
     eval_run.add_argument("--root", type=Path, default=Path.cwd())
@@ -68,7 +131,9 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     release = commands.add_parser("release", help="evaluate release policy")
-    release_commands = release.add_subparsers(dest="release_command", required=True)
+    release_commands = release.add_subparsers(
+        dest="release_command", required=True, parser_class=AgentArgumentParser
+    )
     release_check = release_commands.add_parser("check", help="apply release gates")
     release_check.add_argument("--report", type=Path, required=True)
     release_check.add_argument("--policy", type=Path, required=True)
@@ -79,7 +144,15 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> int:
-    args = build_parser().parse_args(argv)
+    global _help_force_color, _help_no_color
+    raw_args = list(sys.argv[1:] if argv is None else argv)
+    _help_no_color, _help_force_color = _resolve_color_preferences(raw_args)
+    args = build_parser().parse_args(raw_args)
+    configure(
+        no_color=_help_no_color,
+        force_color=_help_force_color,
+        no_animations=args.no_animations,
+    )
     try:
         if args.command == "scaffold":
             return scaffold_agent(args)
@@ -102,6 +175,9 @@ def main(argv: list[str] | None = None) -> int:
                 output_format=args.format,
             )
     except (OSError, ValueError) as exc:
-        print(f"agentctl: {exc}", file=sys.stderr)
+        if getattr(args, "format", "text") == "json":
+            json_error(str(exc))
+        else:
+            error(str(exc))
         return 2
     return 2

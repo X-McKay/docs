@@ -4,11 +4,13 @@ import argparse
 import os
 import subprocess
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
 from agentctl.files import DataFileError, dump_json_atomic, load_data
+from agentctl.ui import command as show_command
+from agentctl.ui import error, status, success
 
 
 def run_eval_command(args: argparse.Namespace) -> int:
@@ -31,41 +33,43 @@ def run_eval_command(args: argparse.Namespace) -> int:
     environment = os.environ.copy()
     environment["AGENTCTL_REPORT_PATH"] = str(report)
     environment["AGENTCTL_AGENT"] = args.agent
-    started = datetime.now(timezone.utc)
-    print(f"Running eval adapter: {' '.join(command)}")
+    started = datetime.now(UTC)
+    show_command(command)
     result = subprocess.run(command, cwd=root, env=environment, check=False)
     if result.returncode != 0:
-        print(
-            f"Eval adapter failed with exit code {result.returncode}", file=sys.stderr
-        )
+        error(f"Eval adapter failed with exit code {result.returncode}")
         return result.returncode
     if not report.is_file():
         raise ValueError(f"eval adapter did not create {report}")
     if previous_mtime is not None and report.stat().st_mtime_ns == previous_mtime:
         raise ValueError(f"eval adapter did not update {report}")
 
-    try:
-        payload = load_data(report)
-    except DataFileError as exc:
-        raise ValueError(str(exc)) from exc
-    _validate_report(payload, report)
-    if payload["agent"] != args.agent:
-        raise ValueError(
-            f"{report}: report agent {payload['agent']!r} does not match {args.agent!r}"
+    with status("Validating report and recording provenance…"):
+        try:
+            payload = load_data(report)
+        except DataFileError as exc:
+            raise ValueError(str(exc)) from exc
+        _validate_report(payload, report)
+        if payload["agent"] != args.agent:
+            raise ValueError(
+                f"{report}: report agent {payload['agent']!r} does not match {args.agent!r}"
+            )
+        provenance = payload.setdefault("provenance", {})
+        if not isinstance(provenance, dict):
+            raise DataFileError(f"{report}: provenance must be a mapping")
+        provenance.update(
+            {
+                "agentctl_started_at": started.isoformat(),
+                "agentctl_completed_at": datetime.now(UTC).isoformat(),
+                "eval_command": command,
+                "git_commit": _git_commit(root),
+            }
         )
-    provenance = payload.setdefault("provenance", {})
-    if not isinstance(provenance, dict):
-        raise DataFileError(f"{report}: provenance must be a mapping")
-    provenance.update(
-        {
-            "agentctl_started_at": started.isoformat(),
-            "agentctl_completed_at": datetime.now(timezone.utc).isoformat(),
-            "eval_command": command,
-            "git_commit": _git_commit(root),
-        }
+        dump_json_atomic(report, payload)
+    success(
+        "Evaluation complete",
+        (("Agent", args.agent), ("Report", str(report))),
     )
-    dump_json_atomic(report, payload)
-    print(f"Eval report: {report}")
     return 0
 
 

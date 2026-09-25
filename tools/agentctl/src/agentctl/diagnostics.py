@@ -5,6 +5,8 @@ from collections.abc import Iterable
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
+from agentctl.ui import diagnostics_table
+
 
 @dataclass(frozen=True)
 class Diagnostic:
@@ -32,12 +34,8 @@ def emit_diagnostics(
                 sort_keys=True,
             )
         )
-    elif items:
-        print(heading)
-        for item in items:
-            print(item.render())
     else:
-        print(f"{heading}: passed")
+        diagnostics_table(items, heading_text=heading)
     return int(any(item.severity == "error" for item in items))
 
 

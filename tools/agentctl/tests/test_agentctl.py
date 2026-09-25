@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import os
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -272,6 +274,50 @@ regressions:
             ),
             1,
         )
+
+    def test_force_color_overrides_no_color_environment_for_help(self) -> None:
+        environment = dict(os.environ)
+        environment["NO_COLOR"] = "1"
+        result = subprocess.run(
+            [sys.executable, "-m", "agentctl", "--force-color", "--help"],
+            env=environment,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0)
+        self.assertIn(b"\x1b[", result.stdout)
+
+    def test_force_color_environment_styles_help(self) -> None:
+        environment = dict(os.environ)
+        environment.pop("NO_COLOR", None)
+        environment["FORCE_COLOR"] = "1"
+        result = subprocess.run(
+            [sys.executable, "-m", "agentctl", "--help"],
+            env=environment,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0)
+        self.assertIn(b"\x1b[", result.stdout)
+
+    def test_json_output_never_contains_terminal_styling(self) -> None:
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "agentctl",
+                "--force-color",
+                "validate",
+                "--root",
+                str(self.root),
+                "--format",
+                "json",
+            ],
+            capture_output=True,
+            check=False,
+        )
+        self.assertNotIn(b"\x1b[", result.stdout)
+        json.loads(result.stdout)
 
 
 if __name__ == "__main__":

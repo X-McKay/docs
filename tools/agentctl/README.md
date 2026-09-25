@@ -7,7 +7,8 @@
 From the documentation repository:
 
 ```bash
-uv run --project tools/agentctl agentctl --help
+uv sync --locked
+uv run --locked agentctl --help
 ```
 
 Install it into an isolated environment when using it from another repository:
@@ -17,7 +18,28 @@ uv tool install ./tools/agentctl
 agentctl --help
 ```
 
-The repository-level [`scripts/agentctl`](../../scripts/agentctl) wrapper uses the first form.
+The repository-level [`scripts/agentctl`](../../scripts/agentctl) wrapper uses the locked workspace automatically.
+
+For a fully pinned system-tool environment, enter the Nix development shell first:
+
+```bash
+nix develop
+just bootstrap
+just check
+```
+
+## Terminal experience
+
+Interactive terminals receive styled help, semantic colors, responsive tables and panels, and unobtrusive spinners around longer phases. Redirected output automatically drops animation and ANSI styling. JSON modes remain machine-readable.
+
+```bash
+agentctl --help
+agentctl --no-color --no-animations validate
+agentctl --force-color skills validate skills
+agentctl validate --format json
+```
+
+The standard `NO_COLOR`, `FORCE_COLOR`, `CI`, and `TERM=dumb` conventions are respected.
 
 ## Scaffold an agent
 
@@ -123,13 +145,14 @@ Missing gates or metrics fail closed. When a policy defines regressions, an appr
 ```yaml
 - name: Validate agent contracts and skills
   run: |
-    uv run --project tools/agentctl agentctl validate
-    uv run --project tools/agentctl agentctl skills validate
+    uv sync --locked
+    uv run --locked agentctl --no-animations validate
+    uv run --locked agentctl --no-animations skills validate
 
 - name: Run smoke evals and release gates
   run: |
-    uv run --project tools/agentctl agentctl eval run customer-support
-    uv run --project tools/agentctl agentctl release check \
+    uv run --locked agentctl --no-animations eval run customer-support
+    uv run --locked agentctl --no-animations release check \
       --report artifacts/evals/customer-support.json \
       --policy evals/customer_support/release-policy.yaml \
       --baseline evals/customer_support/baselines/main.json
