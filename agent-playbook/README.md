@@ -26,7 +26,7 @@ The playbook is intentionally opinionated. Teams may adopt stricter controls. Ex
 
 ## Executable guidance
 
-The companion [Agent Development Skills](../skills/README.md) translate this standard into focused workflows for Claude Code, Codex, and compatible Agent Skills clients.
+The companion [Agent Development Skills](../skills/README.md) translate this standard into focused workflows for Claude Code, Codex, and compatible Agent Skills clients. [`agentctl`](../tools/agentctl/README.md) provides the executable golden path for scaffolding, contract and skill validation, eval adapters, provenance, and release gates.
 
 ## Normative language
 

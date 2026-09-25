@@ -1,0 +1,17 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "agentctl-playbook"
+version = "0.1.0"
+description = "Golden-path development and conformance tooling for the Agent Playbook"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = ["PyYAML>=6.0"]
+
+[project.scripts]
+agentctl = "agentctl.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/agentctl"]

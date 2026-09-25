@@ -18,3 +18,11 @@ The current version is **v0.1 — first draft**.
 ## Agent Development Skills
 
 The [`skills/`](skills/README.md) library turns the playbook into six portable Agent Skills for Claude Code, Codex, and compatible runtimes. It includes focused workflows for agent design, capability design, Temporal execution, evals, production operations, and readiness reviews, with examples and supporting references.
+
+## Development Toolkit
+
+[`agentctl`](tools/agentctl/README.md) turns the standard into executable guardrails. It scaffolds agent packages, validates Agent Specs and skills, runs version-pinned eval adapters, records provenance, and applies fail-closed release gates.
+
+```bash
+scripts/agentctl --help
+```

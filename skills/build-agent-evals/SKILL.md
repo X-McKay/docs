@@ -22,8 +22,9 @@ Convert product claims and operational risks into reproducible evidence and rele
 6. Test the full execution path when it matters, including tool results and Temporal recovery behavior, not only the final answer.
 7. Repeat stochastic cases and report pass rate, variance, and confidence—not one lucky run.
 8. Track quality beside latency, tokens, tool calls, retries, and estimated cost.
-9. Establish a trusted baseline and fail CI on hard-gate violations or material regressions beyond an explicit tolerance.
-10. Sample production traces into reviewed datasets while redacting sensitive data and separating monitoring from release evidence.
+9. Use `agentctl eval run` and `agentctl release check` when available to normalize provenance and apply fail-closed gates.
+10. Establish a trusted baseline and fail CI on hard-gate violations or material regressions beyond an explicit tolerance.
+11. Sample production traces into reviewed datasets while redacting sensitive data and separating monitoring from release evidence.
 
 ## Required Output
 

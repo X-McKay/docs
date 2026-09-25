@@ -151,14 +151,17 @@ The local environment SHOULD provide:
 
 Suggested commands:
 
-```text
-make lint
-make test
-make eval-smoke
-make temporal-replay
-make run-worker
-make run-api
+```bash
+scripts/agentctl validate
+scripts/agentctl skills validate
+scripts/agentctl eval run customer-support
+scripts/agentctl release check \
+  --report artifacts/evals/customer-support.json \
+  --policy evals/customer_support/release-policy.yaml \
+  --baseline evals/customer_support/baselines/main.json
 ```
+
+The repository may wrap these commands with Make, Just, or its build system. See the companion [`agentctl` documentation](../tools/agentctl/README.md).
 
 ## Pull-request evidence
 

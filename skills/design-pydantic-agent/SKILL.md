@@ -23,10 +23,11 @@ Create an explicit, typed agent package whose contract can be reviewed before im
    - `human_governed` for consequential operations requiring approval.
 4. Select a risk tier from low, medium, high, or critical based on consequence, reversibility, privilege, exposure, and data sensitivity.
 5. Create the standard package layout. Keep orchestration, tools, runtime skills, prompts, types, policy, and tests separate.
-6. Implement a factory that receives configuration and dependencies explicitly. Keep imports free of network calls and mutable runtime work.
-7. Use Pydantic models for dependencies, structured output, tool inputs, and externally persisted payloads.
-8. Add contract tests for construction, output validation, capability allowlists, and failure behavior.
-9. Record unresolved decisions rather than silently inventing product policy.
+6. Use `agentctl scaffold` when the repository provides it; inspect and customize every generated placeholder.
+7. Implement a factory that receives configuration and dependencies explicitly. Keep imports free of network calls and mutable runtime work.
+8. Use Pydantic models for dependencies, structured output, tool inputs, and externally persisted payloads.
+9. Run `agentctl validate` when available, then add contract tests for construction, output validation, capability allowlists, and failure behavior.
+10. Record unresolved decisions rather than silently inventing product policy.
 
 ## Required Output
 

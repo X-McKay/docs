@@ -15,6 +15,8 @@ This library translates the [Agent Playbook](../agent-playbook/README.md) into f
 
 Each package follows the [Agent Skills specification](https://agentskills.io/specification): a required `SKILL.md`, concise discovery metadata, progressive disclosure, directly linked references, examples, and no required product-specific frontmatter.
 
+When installed in a repository that includes the companion [`agentctl`](../tools/agentctl/README.md), the design, eval, and readiness skills use its scaffolding and validation commands as reproducible evidence.
+
 ## Use with Codex
 
 For repository-scoped use, copy or symlink the skill directories into `.codex/skills/`:
