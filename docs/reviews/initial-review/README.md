@@ -322,6 +322,8 @@ from organization-specific authoring requirements.
 ## Opinions worth revisiting
 
 These are design decisions for maintainers, not defects proved by a validator.
+They are tracked as open items OP-001 through OP-008 in the
+[decision backlog](../../../backlog/opinions-worth-revisiting.md).
 
 | Current opinion | Recommended revision | Decision evidence |
 | --- | --- | --- |
