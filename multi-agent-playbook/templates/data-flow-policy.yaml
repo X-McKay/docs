@@ -1,0 +1,45 @@
+schema_version: 1
+
+artifact_store:
+  provider: replace-with-approved-store
+  authorization_required: true
+  uri_is_not_authorization: true
+  integrity_hash_required: true
+  default_expiry_seconds: 86400
+
+classifications:
+  public:
+    allowed_roles:
+      - coordinator
+      - investigator
+      - reviewer
+      - executor
+  internal:
+    allowed_roles:
+      - coordinator
+      - investigator
+      - reviewer
+      - executor
+  confidential:
+    allowed_roles:
+      - coordinator
+      - investigator
+      - executor
+    require_tenant_binding: true
+    redact_before_review: true
+  restricted:
+    allowed_roles: []
+    default_action: deny
+
+history:
+  share_parent_history: false
+  permit_task_summary: true
+  permit_evidence_references: true
+  include_hidden_instructions: false
+  include_credentials: false
+
+retention:
+  interaction_payload_days: 0
+  safe_hash_days: 30
+  audit_record_days: replace-with-policy
+  deletion_owner: customer-platform

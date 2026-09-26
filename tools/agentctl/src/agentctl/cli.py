@@ -14,6 +14,8 @@ from agentctl.release import check_release
 from agentctl.risk import explain_risk_assessment, validate_risk_assessments
 from agentctl.scaffold import scaffold_agent
 from agentctl.skills import validate_skills
+from agentctl.system_scaffold import scaffold_system
+from agentctl.systems import explain_system, graph_system, validate_systems
 from agentctl.ui import configure, console_options, error, json_error
 from agentctl.validation import validate_project
 
@@ -59,8 +61,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser = AgentArgumentParser(
         prog="agentctl",
-        description="Build and verify agents against the Agent Playbook.",
-        epilog="Examples: agentctl scaffold support-agent --owner platform · agentctl validate · agentctl skills validate skills",
+        description="Build and verify agents and multi-agent systems.",
+        epilog=(
+            "Examples: agentctl scaffold support-agent --owner platform · "
+            "agentctl system validate · agentctl skills validate skills"
+        ),
     )
     parser.add_argument(
         "--version", action="version", version=f"%(prog)s {__version__}"
@@ -104,6 +109,81 @@ def build_parser() -> argparse.ArgumentParser:
     validate.add_argument("--root", type=Path, default=Path.cwd())
     validate.add_argument("--format", choices=("text", "json"), default="text")
 
+    system = commands.add_parser("system", help="work with multi-agent systems")
+    system_commands = system.add_subparsers(
+        dest="system_command", required=True, parser_class=AgentArgumentParser
+    )
+    system_scaffold = system_commands.add_parser(
+        "scaffold", help="create a golden-path multi-agent system package"
+    )
+    system_scaffold.add_argument("name", help="lowercase hyphenated system name")
+    system_scaffold.add_argument("--root", type=Path, default=Path.cwd())
+    system_scaffold.add_argument("--package", default="acme_agents")
+    system_scaffold.add_argument("--owner", default="replace-me")
+    system_scaffold.add_argument("--operational-owner", default="replace-me")
+    system_scaffold.add_argument(
+        "--execution-class",
+        choices=("ephemeral", "durable", "human_governed"),
+        default="durable",
+    )
+    system_scaffold.add_argument(
+        "--risk-tier",
+        choices=("low", "medium", "high", "critical"),
+        default="medium",
+    )
+    system_scaffold.add_argument(
+        "--topology",
+        choices=(
+            "programmatic_pipeline",
+            "supervisor_worker",
+            "fanout_gather",
+            "producer_reviewer",
+            "handoff",
+            "quorum",
+            "hierarchical",
+            "blackboard",
+            "peer_mesh",
+            "recursive_task_tree",
+            "dynamic_membership",
+            "market",
+            "event_driven",
+            "hybrid",
+        ),
+        default="supervisor_worker",
+    )
+    system_scaffold.add_argument(
+        "--member",
+        action="append",
+        default=[],
+        metavar="AGENT:ROLE",
+        help="pinned agent and role; repeat at least twice",
+    )
+    system_scaffold.add_argument("--dynamic-membership", action="store_true")
+    system_scaffold.add_argument("--recursive-delegation", action="store_true")
+    system_scaffold.add_argument("--with-temporal", action="store_true")
+    system_scaffold.add_argument("--force", action="store_true")
+
+    system_validate = system_commands.add_parser(
+        "validate", help="validate System Specs and referenced contracts"
+    )
+    system_validate.add_argument("paths", nargs="*", type=Path)
+    system_validate.add_argument("--root", type=Path, default=Path.cwd())
+    system_validate.add_argument("--format", choices=("text", "json"), default="text")
+    system_explain = system_commands.add_parser(
+        "explain", help="show a validated system summary"
+    )
+    system_explain.add_argument("path", type=Path)
+    system_explain.add_argument("--root", type=Path, default=Path.cwd())
+    system_explain.add_argument("--format", choices=("text", "json"), default="text")
+    system_graph = system_commands.add_parser(
+        "graph", help="render the declared member and interaction graph"
+    )
+    system_graph.add_argument("path", type=Path)
+    system_graph.add_argument("--root", type=Path, default=Path.cwd())
+    system_graph.add_argument(
+        "--format", choices=("text", "json", "dot"), default="text"
+    )
+
     skills = commands.add_parser("skills", help="work with Agent Skills packages")
     skills_commands = skills.add_subparsers(
         dest="skills_command", required=True, parser_class=AgentArgumentParser
@@ -139,6 +219,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     eval_run = eval_commands.add_parser("run", help="run an eval adapter")
     eval_run.add_argument("agent")
+    eval_run.add_argument(
+        "--system",
+        action="store_true",
+        help="evaluate a multi-agent system instead of an individual agent",
+    )
     eval_run.add_argument("--root", type=Path, default=Path.cwd())
     eval_run.add_argument("--report", type=Path)
     eval_run.add_argument(
@@ -176,6 +261,20 @@ def main(argv: list[str] | None = None) -> int:
             return scaffold_agent(args)
         if args.command == "validate":
             return validate_project(args.root, output_format=args.format)
+        if args.command == "system" and args.system_command == "scaffold":
+            return scaffold_system(args)
+        if args.command == "system" and args.system_command == "validate":
+            return validate_systems(
+                root=args.root, paths=args.paths, output_format=args.format
+            )
+        if args.command == "system" and args.system_command == "explain":
+            return explain_system(
+                root=args.root, path=args.path, output_format=args.format
+            )
+        if args.command == "system" and args.system_command == "graph":
+            return graph_system(
+                root=args.root, path=args.path, output_format=args.format
+            )
         if args.command == "skills" and args.skills_command == "validate":
             return validate_skills(
                 root=args.root,
@@ -204,7 +303,7 @@ def main(argv: list[str] | None = None) -> int:
                 baseline_path=args.baseline,
                 output_format=args.format,
             )
-    except (OSError, ValueError) as exc:
+    except (OSError, TypeError, ValueError) as exc:
         if getattr(args, "format", "text") == "json":
             json_error(str(exc))
         else:

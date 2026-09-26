@@ -1,0 +1,4 @@
+interface:
+  display_name: "Review Multi-Agent Readiness"
+  short_description: "Audit multi-agent launch evidence"
+  default_prompt: "Use $review-multi-agent-readiness to perform an evidence-based launch review of this multi-agent system."

@@ -29,7 +29,7 @@ dev = [{ name = "ruff", specifier = "==0.16.9" }]
 
 [[package]]
 name = "agentctl-playbook"
-version = "0.3.0"
+version = "0.4.0"
 source = { editable = "tools/agentctl" }
 dependencies = [
     { name = "jsonschema" },

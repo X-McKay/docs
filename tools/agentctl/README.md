@@ -1,6 +1,9 @@
 # agentctl
 
-`agentctl` is the executable companion to the Agent Playbook. It scaffolds the golden path, validates agent and risk contracts, validates Agent Skills, runs version-pinned eval adapters, and applies fail-closed release gates.
+`agentctl` is the executable companion to the Agent and Multi-Agent Playbooks.
+It scaffolds their golden paths, validates agent, system, and risk contracts,
+validates Agent Skills, renders composition graphs, runs version-pinned eval
+adapters, and applies fail-closed release gates.
 
 ## Install or run locally
 
@@ -66,6 +69,43 @@ scripts/agentctl validate --root /path/to/project --format json
 
 Validation covers required Agent Spec metadata, semantic versions, execution and risk classes, budgets, Temporal structure, approval policy, threat-model presence, eval policy, capability existence, tool effect, retry safety, authorization declarations, timeouts, output bounds, and consistency with the referenced risk assessment.
 
+## Scaffold and validate a multi-agent system
+
+Scaffold conformant member agents first, then compose their pinned Agent Specs:
+
+```bash
+scripts/agentctl system scaffold research-system \
+  --root /path/to/project \
+  --package acme_agents \
+  --owner ai-platform \
+  --operational-owner research-operations \
+  --execution-class durable \
+  --risk-tier medium \
+  --topology supervisor_worker \
+  --member planner-agent:coordinator \
+  --member researcher-agent:worker
+```
+
+The scaffold creates a System Spec, deterministic policy boundaries, delegation,
+data-flow and termination policies, a system risk assessment, threat model,
+system eval adapter, and Temporal workflow/activity boundaries when required.
+Use `--dynamic-membership` to also create registry and admission policies, and
+`--recursive-delegation` only when bounded recursive decomposition is intended.
+
+```bash
+scripts/agentctl system validate --root /path/to/project
+scripts/agentctl system explain \
+  src/acme_agents/systems/research_system/system.yaml
+scripts/agentctl system graph \
+  src/acme_agents/systems/research_system/system.yaml --format dot
+```
+
+System validation applies the packaged Draft 2020-12 schema and semantic checks
+for owners, topology, dynamic admission, pinned member versions, execution and
+governance floors, member restrictions, declared edges, referenced policies,
+system limits, Temporal structure, and cross-artifact system risk consistency.
+Graph output supports human-readable text, JSON, and Graphviz DOT.
+
 ## Validate and explain risk assessments
 
 Risk assessments are governed by the packaged Draft 2020-12 JSON Schema and
@@ -104,9 +144,12 @@ The built-in validator checks frontmatter, naming, description and body constrai
 
 ```bash
 scripts/agentctl eval run customer-support --root /path/to/project
+scripts/agentctl eval run research-system --system --root /path/to/project
 ```
 
-By default, this runs `evals/customer_support/run.py`. To wrap a version-pinned Pydantic Evals command:
+By default, agent evaluation runs `evals/customer_support/run.py`; system
+evaluation runs `evals/systems/research_system/run.py`. To wrap a version-pinned
+Pydantic Evals command:
 
 ```bash
 scripts/agentctl eval run customer-support \
@@ -119,8 +162,23 @@ The adapter receives:
 
 - `AGENTCTL_AGENT`
 - `AGENTCTL_REPORT_PATH`
+- `AGENTCTL_SUBJECT_KIND`
+- `AGENTCTL_SUBJECT_NAME`
 
-It must write a normalized report:
+`AGENTCTL_AGENT` remains available for agent adapters. New reports may identify
+either kind of subject:
+
+```json
+{
+  "schema_version": 1,
+  "subject": {"kind": "system", "name": "research-system"},
+  "hard_gates": {"critical_system_risks_pass": true},
+  "metrics": {"task_success_rate": 0.94}
+}
+```
+
+The legacy agent-only report shape remains supported and uses this normalized
+form:
 
 ```json
 {
@@ -192,6 +250,7 @@ Missing gates or metrics fail closed. When a policy defines regressions, an appr
 ## References
 
 - [Agent Playbook](../../agent-playbook/README.md)
+- [Multi-Agent Systems Playbook](../../multi-agent-playbook/README.md)
 - [PydanticAI Agent Specs](https://pydantic.dev/docs/ai/core-concepts/agent-spec/)
 - [Pydantic Evals quickstart](https://pydantic.dev/docs/ai/evals/getting-started/quick-start/)
 - [PydanticAI Temporal integration](https://pydantic.dev/docs/ai/capabilities/durable_execution/temporal/)

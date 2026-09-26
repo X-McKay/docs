@@ -275,6 +275,38 @@ regressions:
             1,
         )
 
+    def test_release_check_supports_system_subjects(self) -> None:
+        report = self.root / "report.json"
+        baseline = self.root / "baseline.json"
+        policy = self.root / "policy.yaml"
+        payload = {
+            "schema_version": 1,
+            "subject": {"kind": "system", "name": "research-system"},
+            "hard_gates": {"safe": True},
+            "metrics": {"task_success_rate": 0.95},
+        }
+        report.write_text(json.dumps(payload), encoding="utf-8")
+        baseline.write_text(json.dumps(payload), encoding="utf-8")
+        policy.write_text(
+            "schema_version: 1\nhard_gates: {safe: true}\n",
+            encoding="utf-8",
+        )
+        arguments = [
+            "release",
+            "check",
+            "--report",
+            str(report),
+            "--policy",
+            str(policy),
+            "--baseline",
+            str(baseline),
+        ]
+        self.assertEqual(main(arguments), 0)
+        mismatched = dict(payload)
+        mismatched["subject"] = {"kind": "agent", "name": "research-system"}
+        baseline.write_text(json.dumps(mismatched), encoding="utf-8")
+        self.assertEqual(main(arguments), 1)
+
     def test_force_color_overrides_no_color_environment_for_help(self) -> None:
         environment = dict(os.environ)
         environment["NO_COLOR"] = "1"

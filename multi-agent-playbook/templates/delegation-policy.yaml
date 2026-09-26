@@ -1,0 +1,110 @@
+schema_version: 1
+
+defaults:
+  recursive_delegation: false
+  share_parent_history: false
+  forward_credentials: false
+  require_tenant_binding: true
+  reserve_budget_before_dispatch: true
+  content_capture: false
+
+interactions:
+  investigate-case:
+    callers:
+      - resolution-coordinator
+    callees:
+      - customer-investigator
+    mode: delegate
+    authorization_scopes_max:
+      - customers.read
+    data_classification_max: confidential
+    evidence_types:
+      - customer-record-reference
+      - support-case-reference
+    budget:
+      max_model_requests: 3
+      max_tool_calls: 5
+      max_input_tokens: 20000
+      max_output_tokens: 3000
+      max_cost_usd: 0.50
+    retry:
+      maximum_attempts: 2
+      retryable_failures:
+        - transient_provider
+        - transient_dependency
+      non_retryable_failures:
+        - invalid_input
+        - authorization_denied
+        - policy_blocked
+        - budget_exhausted
+    failure:
+      required: true
+      on_failure: escalate
+
+  review-resolution:
+    callers:
+      - resolution-coordinator
+    callees:
+      - policy-reviewer
+    mode: review
+    authorization_scopes_max:
+      - policy.read
+    data_classification_max: internal
+    evidence_types:
+      - redacted-investigation-result
+      - policy-reference
+    budget:
+      max_model_requests: 2
+      max_tool_calls: 3
+      max_input_tokens: 12000
+      max_output_tokens: 2000
+      max_cost_usd: 0.30
+    retry:
+      maximum_attempts: 1
+      retryable_failures: []
+      non_retryable_failures:
+        - invalid_input
+        - authorization_denied
+        - policy_blocked
+        - budget_exhausted
+    failure:
+      required: true
+      on_failure: escalate
+
+  execute-approved-action:
+    callers:
+      - customer-resolution-workflow
+    callees:
+      - customer-action-executor
+    mode: dispatch
+    authorization_scopes_max:
+      - customers.write.approved
+    data_classification_max: confidential
+    evidence_types:
+      - approved-action
+    approval:
+      required: true
+      authenticated_actor: true
+      bind_to_action_hash: true
+      bind_to_manifest_id: true
+      bind_to_actor_and_tenant: true
+    budget:
+      max_model_requests: 1
+      max_tool_calls: 1
+      max_input_tokens: 4000
+      max_output_tokens: 1000
+      max_cost_usd: 0.10
+    retry:
+      maximum_attempts: 2
+      require_idempotency_key: true
+      retryable_failures:
+        - transient_dependency
+      non_retryable_failures:
+        - invalid_input
+        - authorization_denied
+        - policy_blocked
+        - approval_invalid
+        - business_rejection
+    failure:
+      required: true
+      on_failure: compensate_or_escalate

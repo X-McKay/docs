@@ -25,6 +25,15 @@ def check_release(
         raise ValueError(str(exc)) from exc
 
     diagnostics: list[Diagnostic] = []
+    report_subject = _report_subject(report)
+    if report_subject is None:
+        diagnostics.append(
+            Diagnostic(
+                "RELEASE025",
+                "report must identify an agent or system subject",
+                str(report_path),
+            )
+        )
     if report.get("schema_version") != policy.get("schema_version", 1):
         diagnostics.append(
             Diagnostic(
@@ -33,14 +42,24 @@ def check_release(
                 str(report_path),
             )
         )
-    if baseline is not None and report.get("agent") != baseline.get("agent"):
-        diagnostics.append(
-            Diagnostic(
-                "RELEASE021",
-                "current report and baseline refer to different agents",
-                str(report_path),
+    if baseline is not None:
+        baseline_subject = _report_subject(baseline)
+        if baseline_subject is None:
+            diagnostics.append(
+                Diagnostic(
+                    "RELEASE025",
+                    "baseline must identify an agent or system subject",
+                    str(baseline_path),
+                )
             )
-        )
+        elif report_subject is not None and report_subject != baseline_subject:
+            diagnostics.append(
+                Diagnostic(
+                    "RELEASE021",
+                    "current report and baseline refer to different subjects",
+                    str(report_path),
+                )
+            )
     gates = report.get("hard_gates")
     metrics = report.get("metrics")
     if not isinstance(gates, Mapping):
@@ -219,6 +238,20 @@ def _gate_values_equal(observed: Any, expected: Any) -> bool:
     if isinstance(observed, (int, float)) and isinstance(expected, (int, float)):
         return float(observed) == float(expected)
     return type(observed) is type(expected) and observed == expected
+
+
+def _report_subject(payload: Mapping[str, Any]) -> tuple[str, str] | None:
+    subject = payload.get("subject")
+    if isinstance(subject, Mapping):
+        kind = subject.get("kind")
+        name = subject.get("name")
+        if kind in {"agent", "system"} and isinstance(name, str) and name.strip():
+            return kind, name
+        return None
+    agent = payload.get("agent")
+    if isinstance(agent, str) and agent.strip():
+        return "agent", agent
+    return None
 
 
 def _check_regressions(

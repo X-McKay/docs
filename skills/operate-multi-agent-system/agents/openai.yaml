@@ -1,0 +1,4 @@
+interface:
+  display_name: "Operate Multi-Agent System"
+  short_description: "Operate observable and bounded agent systems"
+  default_prompt: "Use $operate-multi-agent-system to define production operations for this multi-agent system."

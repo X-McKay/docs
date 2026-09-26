@@ -1,6 +1,6 @@
 # Agent Development Skills
 
-This library translates the [Agent Playbook](../agent-playbook/README.md) into focused workflows that Claude Code and Codex can discover and apply while building agents.
+This library translates the [Agent Playbook](../agent-playbook/README.md) and [Multi-Agent Playbook](../multi-agent-playbook/README.md) into focused workflows that Claude Code and Codex can discover and apply while building agents and governed agent systems.
 
 ## Catalog
 
@@ -13,6 +13,13 @@ This library translates the [Agent Playbook](../agent-playbook/README.md) into f
 | [`build-agent-evals`](build-agent-evals/SKILL.md) | Datasets, evaluators, trajectory checks, release gates, and online evals |
 | [`operate-agent-production`](operate-agent-production/SKILL.md) | Tracing, SLOs, privacy, budgets, and cost optimization |
 | [`review-agent-readiness`](review-agent-readiness/SKILL.md) | Evidence-based launch reviews and go/no-go decisions |
+| [`design-multi-agent-system`](design-multi-agent-system/SKILL.md) | Architecture justification, topology, System Specs, and composition contracts |
+| [`design-agent-interactions`](design-agent-interactions/SKILL.md) | Typed delegation, handoff, review, voting, authority, and data-flow edges |
+| [`implement-temporal-multi-agent`](implement-temporal-multi-agent/SKILL.md) | Durable coordination, replay, approvals, cancellation, and compensation |
+| [`build-multi-agent-evals`](build-multi-agent-evals/SKILL.md) | Composition, coordination, adversarial, durability, and baseline evaluations |
+| [`assess-multi-agent-risk`](assess-multi-agent-risk/SKILL.md) | System scenarios, emergent risks, controls, evidence, and decisions |
+| [`operate-multi-agent-system`](operate-multi-agent-system/SKILL.md) | System traces, SLOs, budgets, capacity, incidents, and rollback |
+| [`review-multi-agent-readiness`](review-multi-agent-readiness/SKILL.md) | Evidence-based composition design and launch reviews |
 
 Each package follows the [Agent Skills specification](https://agentskills.io/specification): a required `SKILL.md`, concise discovery metadata, progressive disclosure, directly linked references, examples, and no required product-specific frontmatter.
 

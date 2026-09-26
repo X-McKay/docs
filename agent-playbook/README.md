@@ -6,6 +6,10 @@
 
 This playbook defines a production standard for building AI agents with [PydanticAI](https://pydantic.dev/docs/ai/) and [Temporal](https://docs.temporal.io/). It treats an agent as a governed software system: a typed contract, a constrained set of capabilities, a durable execution model when required, and measurable quality, safety, reliability, and cost.
 
+For systems that coordinate multiple agents, every member remains subject to
+this standard and the composition is additionally governed by the companion
+[Multi-Agent Systems Playbook](../multi-agent-playbook/README.md).
+
 The playbook is intentionally opinionated. Teams may adopt stricter controls. Exceptions should be explicit, time-bound, and approved by an accountable owner.
 
 ## Contents

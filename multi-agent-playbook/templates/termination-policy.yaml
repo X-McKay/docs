@@ -1,0 +1,51 @@
+schema_version: 1
+
+limits:
+  max_rounds: 3
+  max_delegation_depth: 2
+  max_agent_runs: 6
+  max_parallel_agents: 3
+  deadline_seconds: 180
+  no_progress_rounds: 1
+
+terminal_states:
+  success:
+    - resolved
+    - approved_action_completed
+  escalation:
+    - escalated_to_human
+  rejection:
+    - rejected_by_policy
+    - rejected_by_approver
+  cancellation:
+    - cancelled_without_effect
+    - cancelled_after_partial_effect
+  failure:
+    - failed_retryable_exhausted
+    - failed_permanent
+    - partial_effect
+    - compensated
+
+on_limit:
+  max_rounds: escalate
+  max_delegation_depth: policy_blocked
+  max_agent_runs: escalate
+  max_parallel_agents: queue
+  deadline_seconds: cancel_and_escalate
+  no_progress_rounds: escalate
+
+member_failure:
+  required_member: escalate
+  optional_member: continue_with_recorded_degradation
+
+result_handling:
+  late_result: discard_and_audit
+  duplicate_result: deduplicate_by_delegation_id
+  malformed_result: reject_and_apply_failure_policy
+  conflicting_result: preserve_dissent_and_escalate
+
+cancellation:
+  propagate_to_active_descendants: true
+  wait_for_cancellation_acknowledgement: true
+  compensate_completed_reversible_effects: true
+  preserve_audit_records: true

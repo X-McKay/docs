@@ -1,0 +1,143 @@
+name: customer-resolution-system
+description: Investigate support cases and propose policy-compliant resolutions.
+
+metadata:
+  contract_version: 1
+  owner: customer-platform
+  operational_owner: customer-operations
+  version: 1.0.0
+  execution_class: human_governed
+  governance_tier: high
+  risk_assessment: docs/risk-assessments/customer-resolution-system.yaml
+  threat_model: docs/threat-models/customer-resolution-system.md
+  evaluation_policy: evals/systems/customer_resolution_system/release-policy.yaml
+  data_classification: confidential
+  temporal_enabled: true
+  approval_policy: src/acme_agents/policy/approvals/customer_resolution.yaml
+
+justification:
+  decision_owner: customer-platform
+  review_by: "2027-03-25"
+  claimed_benefits:
+    - Isolate read-only investigation from consequential customer actions.
+    - Add independent policy review before presenting a resolution.
+  baseline: single-agent-customer-resolution-v2
+  evidence: artifacts/evals/customer-resolution-system/admission.json
+  success_measures:
+    - lower_policy_violation_rate
+    - no_cross_tenant_access
+
+topology:
+  type: supervisor_worker
+  orchestrator: customer-resolution-workflow
+  coordinator: resolution-coordinator
+  dynamic_membership: false
+  recursive_delegation: false
+
+members:
+  - agent: resolution-coordinator
+    version: 1.2.0
+    role: coordinator
+    required: true
+    restrictions:
+      skills:
+        include:
+          - support-resolution
+      toolsets:
+        include: []
+      authorization_scopes_max: []
+      data_classification_max: confidential
+  - agent: customer-investigator
+    version: 2.1.0
+    role: investigator
+    required: true
+    restrictions:
+      skills:
+        include:
+          - customer-investigation
+      toolsets:
+        include:
+          - customer-records-read
+      authorization_scopes_max:
+        - customers.read
+      data_classification_max: confidential
+  - agent: policy-reviewer
+    version: 1.4.0
+    role: reviewer
+    required: true
+    restrictions:
+      skills:
+        include:
+          - customer-policy
+      toolsets:
+        include:
+          - policy-search
+      authorization_scopes_max:
+        - policy.read
+      data_classification_max: internal
+  - agent: customer-action-executor
+    version: 1.1.0
+    role: executor
+    required: true
+    restrictions:
+      skills:
+        include: []
+      toolsets:
+        include:
+          - customer-actions
+      authorization_scopes_max:
+        - customers.write.approved
+      data_classification_max: confidential
+
+interactions:
+  - id: investigate-case
+    from: resolution-coordinator
+    to: customer-investigator
+    mode: delegate
+    input_schema: CustomerInvestigationRequest
+    output_schema: CustomerInvestigationResult
+    policy: policies/delegation.yaml#investigate-case
+    max_calls: 2
+    timeout_seconds: 60
+  - id: review-resolution
+    from: resolution-coordinator
+    to: policy-reviewer
+    mode: review
+    input_schema: ResolutionProposal
+    output_schema: PolicyReview
+    policy: policies/delegation.yaml#review-resolution
+    max_calls: 1
+    timeout_seconds: 45
+  - id: execute-approved-action
+    from: customer-resolution-workflow
+    to: customer-action-executor
+    mode: dispatch
+    input_schema: ApprovedCustomerAction
+    output_schema: CustomerActionResult
+    policy: policies/delegation.yaml#execute-approved-action
+    max_calls: 1
+    timeout_seconds: 30
+
+limits:
+  max_agent_runs: 6
+  max_delegation_depth: 2
+  max_parallel_agents: 3
+  max_rounds: 3
+  max_model_requests: 20
+  max_tool_calls: 30
+  max_input_tokens: 80000
+  max_output_tokens: 12000
+  max_cost_usd: 2.00
+  deadline_seconds: 180
+
+state:
+  owner: customer-resolution-workflow
+  shared_memory: none
+  artifact_policy: policies/data-flow.yaml
+
+termination:
+  policy: policies/termination.yaml
+  success_states:
+    - resolved
+    - approved_action_completed
+  escalation_state: escalated_to_human

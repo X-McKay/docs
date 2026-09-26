@@ -1,0 +1,4 @@
+interface:
+  display_name: "Design Multi-Agent System"
+  short_description: "Design governed multi-agent architectures"
+  default_prompt: "Use $design-multi-agent-system to design and justify a governed multi-agent system."

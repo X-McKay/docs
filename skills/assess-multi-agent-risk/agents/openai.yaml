@@ -1,0 +1,4 @@
+interface:
+  display_name: "Assess Multi-Agent Risk"
+  short_description: "Assess composition and emergent system risk"
+  default_prompt: "Use $assess-multi-agent-risk to create an evidence-linked multi-agent system risk assessment."

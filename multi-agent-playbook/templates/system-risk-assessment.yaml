@@ -1,0 +1,241 @@
+schema_version: 1
+
+assessment:
+  system: customer-resolution-system
+  system_version: 1.0.0
+  composition_manifest: replace-with-approved-manifest-id
+  assessment_version: 1.0.0
+  status: draft # draft | approved | rejected | retired
+  assessed_at: "2026-09-25"
+  review_by: "2026-12-25"
+  prepared_by: customer-platform
+  approved_by: []
+
+scope:
+  intended_use: Investigate support cases and propose policy-compliant resolutions.
+  prohibited_uses:
+    - Execute a customer action without valid bound approval.
+    - Admit an unreviewed member or access data outside the authenticated tenant.
+  users:
+    - customer-support-agents
+  affected_parties:
+    - customers
+    - support-staff
+  environments:
+    - production
+  jurisdictions:
+    - replace-with-applicable-jurisdictions
+  execution_class: human_governed
+  topology:
+    profile: supervisor_worker
+    dynamic_membership: false
+    recursive_delegation: false
+    maximum_members: 4
+    maximum_depth: 2
+    maximum_fanout: 3
+  rollout:
+    tenants: replace-with-rollout-scope
+    maximum_daily_runs: replace-with-limit
+
+member_assessments:
+  - agent: resolution-coordinator
+    agent_version: 1.2.0
+    governance_tier: medium
+    assessment: docs/risk-assessments/resolution-coordinator.yaml
+    assessment_digest: replace-with-sha256
+    status: approved
+  - agent: customer-investigator
+    agent_version: 2.1.0
+    governance_tier: medium
+    assessment: docs/risk-assessments/customer-investigator.yaml
+    assessment_digest: replace-with-sha256
+    status: approved
+  - agent: policy-reviewer
+    agent_version: 1.4.0
+    governance_tier: medium
+    assessment: docs/risk-assessments/policy-reviewer.yaml
+    assessment_digest: replace-with-sha256
+    status: approved
+  - agent: customer-action-executor
+    agent_version: 1.1.0
+    governance_tier: high
+    assessment: docs/risk-assessments/customer-action-executor.yaml
+    assessment_digest: replace-with-sha256
+    status: approved
+
+dimension_review:
+  financial:
+    status: applicable
+    rationale: Coordinated actions can create credits, refunds, or liability.
+  operational:
+    status: applicable
+    rationale: Coordination or retry failures can disrupt support and customer records.
+  reputational:
+    status: applicable
+    rationale: Incorrect or inconsistent outcomes can reduce customer trust.
+  legal:
+    status: applicable
+    rationale: Customer communications and actions may create legal exposure.
+  security:
+    status: applicable
+    rationale: Members combine authenticated access to customer and policy systems.
+  privacy:
+    status: applicable
+    rationale: Interactions process and summarize confidential customer information.
+  regulatory:
+    status: applicable
+    rationale: Consumer and sector requirements may apply to the combined process.
+  human_impact_safety:
+    status: applicable
+    rationale: Incorrect outcomes may materially affect customers.
+
+composition_amplifiers:
+  aggregate_authority: consequential_customer_actions
+  shared_state: workflow_state_and_artifact_references
+  external_publishers: none
+  maximum_parallel_agents: 3
+  persistent_collective: false
+  correlated_models: replace-with-analysis
+  maximum_blast_radius: one_authenticated_customer_case
+
+regulatory_screen:
+  prohibited_use: false
+  applicable_regimes: []
+  required_reviews:
+    - privacy
+    - security
+  governance_floors:
+    - source: consequential-action-capability
+      tier: high
+      rationale: The system can reach a human-governed customer action executor.
+  notes: Confirm sector and jurisdiction-specific obligations before approval.
+
+classification:
+  governance_tier: high
+  maximum_member_tier: high
+  maximum_inherent_tier: high
+  maximum_residual_tier: medium
+  decision: conditional_go # go | conditional_go | no_go
+  rationale: Launch only after the linked authority and duplicate-effect evidence passes.
+
+scenarios:
+  - id: SYS-RISK-AUTH-001
+    title: Authority laundering through the coordinator
+    status: open
+    family: authority_and_confused_deputy
+    statement: >-
+      Because a coordinator can construct requests for a more privileged member,
+      the system could pass model-generated identity or approval claims to the
+      action executor, causing an unauthorized customer action and financial,
+      legal, security, and reputational harm.
+    primary_dimension: security
+    secondary_dimensions:
+      - financial
+      - legal
+      - reputational
+    affected_parties:
+      - customers
+      - organization
+    affected_assets:
+      - customer records
+      - customer credits and refunds
+    participating_roles:
+      - coordinator
+      - executor
+    interactions:
+      - execute-approved-action
+    referenced_member_scenarios:
+      - customer-action-executor:RISK-AUTH-001
+    causes:
+      - model output is interpreted as authenticated authority
+      - approval context is not bound to the final action
+    preconditions:
+      - a coordinator can reach the executor
+      - the executor receives untrusted action context
+    consequences:
+      - an action executes without valid actor authority or approval
+    inherent:
+      impact: 3
+      likelihood: 3
+      tier: high
+      confidence: medium
+      rationale: The system combines model-planned work with consequential capability.
+    controls:
+      - id: SYS-CTRL-AUTH-001
+        type: preventive # preventive | detective | recovery
+        description: >-
+          Deterministic policy intersects actor, edge, role, member, workflow,
+          and approval scopes before dispatching the executor.
+        owner: customer-platform
+        evidence:
+          - tests/system/test_authority_attenuation.py
+          - evals/systems/customer_resolution_system/cases/AUTH-001.yaml
+        effectiveness: verified # planned | implemented | verified | ineffective
+      - id: SYS-CTRL-APPROVAL-001
+        type: preventive
+        description: Bind authenticated approval to action, arguments, tenant, actor, policy, and manifest.
+        owner: customer-platform
+        evidence:
+          - tests/workflow/test_approval_binding.py
+        effectiveness: verified
+    residual:
+      impact: 3
+      likelihood: 1
+      tier: medium
+      confidence: medium
+      rationale: Deterministic enforcement reduces likelihood but not action impact.
+    treatment: mitigate # avoid | mitigate | transfer | accept
+    owner: customer-platform
+    eval_cases:
+      - AUTH-001
+      - AUTH-002
+    indicators:
+      - system_authorization_denials_total
+      - approval_argument_mismatch_total
+    alerts:
+      - unauthorized-consequential-action
+    runbook: docs/runbooks/system-authorization-incident.md
+    acceptance: null
+
+evidence_summary:
+  covered_scenarios:
+    - SYS-RISK-AUTH-001
+  uncovered_scenarios: []
+  hard_gates:
+    report: artifacts/evals/customer-resolution-system.json
+    status: pending
+  temporal_replay:
+    report: artifacts/replay/customer-resolution-system.json
+    status: pending
+  security_review:
+    report: docs/reviews/customer-resolution-system-security.md
+    status: pending
+  kill_switch_exercise:
+    report: artifacts/exercises/customer-resolution-system-kill-switch.json
+    status: pending
+
+acceptance:
+  accepted_scenarios: []
+  conditions:
+    - id: CONDITION-001
+      description: All authority and duplicate-effect hard gates pass.
+      owner: customer-platform
+      due_at: "2026-10-15"
+      consequence_if_unmet: no_go
+  accountable_role: replace-with-risk-authority
+  accepted_by: null
+  accepted_at: null
+  expires_at: null
+
+monitoring:
+  indicators:
+    - system_authorization_denials_total
+    - duplicate_side_effects_total
+    - unexpected_graph_edges_total
+    - system_cost_per_compliant_success
+  review_cadence_days: 90
+  next_review_at: "2026-12-25"
+
+open_questions:
+  - Confirm applicable jurisdictions and sector-specific obligations.
+  - Attach approved eval, replay, security-review, and exercise evidence.

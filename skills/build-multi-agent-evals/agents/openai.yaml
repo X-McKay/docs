@@ -1,0 +1,4 @@
+interface:
+  display_name: "Build Multi-Agent Evals"
+  short_description: "Evaluate multi-agent composition and failure modes"
+  default_prompt: "Use $build-multi-agent-evals to create system-level evaluation coverage and release gates."

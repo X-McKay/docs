@@ -16,17 +16,29 @@ The [Agent Playbook](agent-playbook/README.md) defines an opinionated standard f
 - Evaluation, observability, and cost controls
 - Security, governance, and production readiness
 
+### Multi-Agent Systems Playbook
+
+The [Multi-Agent Systems Playbook](multi-agent-playbook/README.md) extends the
+Agent Playbook for governed compositions of multiple agents. It adds standards
+for topology selection, membership, roles, typed delegation, authority
+attenuation, dynamic composition, shared state, system-wide limits, and
+composition manifests while retaining the Agent Playbook contract for every
+participating agent.
+
 ### Agent Development Skills
 
-The [`skills/`](skills/README.md) library turns the playbook into seven portable
-Agent Skills for Claude Code, Codex, and compatible runtimes. It includes
-focused workflows for risk assessment, agent and capability design, Temporal
-execution, evals, production operations, and readiness reviews, with examples
-and supporting references.
+The [`skills/`](skills/README.md) library turns both playbooks into fourteen
+portable Agent Skills for Claude Code, Codex, and compatible runtimes. It
+includes focused workflows for agent and multi-agent design, interactions,
+risk, Temporal execution, evals, production operations, and readiness reviews.
 
 ### Development Toolkit
 
-[`agentctl`](tools/agentctl/README.md) turns the standard into executable guardrails. It scaffolds agent packages, validates Agent Specs, risk assessments, and skills, runs version-pinned eval adapters, records provenance, and applies fail-closed release gates.
+[`agentctl`](tools/agentctl/README.md) turns the standards into executable
+guardrails. It scaffolds agent and multi-agent system packages, validates Agent
+Specs, System Specs, risk assessments, and skills, renders composition graphs,
+runs version-pinned eval adapters, records provenance, and applies fail-closed
+release gates.
 
 ```bash
 scripts/agentctl --help

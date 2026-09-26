@@ -1,0 +1,4 @@
+interface:
+  display_name: "Design Agent Interactions"
+  short_description: "Specify typed and authorized agent edges"
+  default_prompt: "Use $design-agent-interactions to define secure, typed interaction contracts for this multi-agent system."
