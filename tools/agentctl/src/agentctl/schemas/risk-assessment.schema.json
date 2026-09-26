@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/X-McKay/docs/main/tools/agentctl/src/agentctl/schemas/risk-assessment.schema.json",
+  "$id": "https://raw.githubusercontent.com/X-McKay/playbooks/main/tools/agentctl/src/agentctl/schemas/risk-assessment.schema.json",
   "title": "Agent Risk Assessment",
   "description": "A scenario-based assessment of inherent and residual agent risk.",
   "type": "object",

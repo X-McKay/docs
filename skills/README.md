@@ -24,7 +24,7 @@ For repository-scoped use, copy or symlink the skill directories into `.codex/sk
 
 ```bash
 mkdir -p .codex/skills
-cp -R /path/to/docs/skills/*/ .codex/skills/
+cp -R /path/to/playbooks/skills/*/ .codex/skills/
 ```
 
 For personal use across repositories, use `~/.codex/skills/` instead. The optional `agents/openai.yaml` in each package supplies Codex presentation metadata and does not alter the portable `SKILL.md` contract.
@@ -41,7 +41,7 @@ For repository-scoped use, copy or symlink the skill directories into `.claude/s
 
 ```bash
 mkdir -p .claude/skills
-cp -R /path/to/docs/skills/*/ .claude/skills/
+cp -R /path/to/playbooks/skills/*/ .claude/skills/
 ```
 
 For personal use, use `~/.claude/skills/`. Claude Code can select a skill from its description or invoke it by name, such as `/build-agent-evals`.

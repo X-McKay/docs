@@ -1,5 +1,5 @@
 {
-  description = "Reproducible Agent Playbook development environment";
+  description = "Reproducible Playbooks development environment";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
@@ -37,7 +37,7 @@
             };
 
             shellHook = ''
-              echo "Agent Playbook development shell"
+              echo "Playbooks development shell"
               echo "Run 'just bootstrap' once, then 'just check'."
             '';
           };

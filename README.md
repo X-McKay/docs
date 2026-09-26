@@ -1,8 +1,11 @@
-# Engineering Playbooks
+# Playbooks
 
-This repository contains practical standards for building and operating production software systems.
+Practical standards, reusable skills, and executable tooling for building and
+operating production software systems.
 
-## Agent Playbook
+## What's here
+
+### Agent Playbook
 
 The [Agent Playbook](agent-playbook/README.md) defines an opinionated standard for building production AI agents with PydanticAI and Temporal. It covers:
 
@@ -13,9 +16,7 @@ The [Agent Playbook](agent-playbook/README.md) defines an opinionated standard f
 - Evaluation, observability, and cost controls
 - Security, governance, and production readiness
 
-The current version is **v0.3 — draft**.
-
-## Agent Development Skills
+### Agent Development Skills
 
 The [`skills/`](skills/README.md) library turns the playbook into seven portable
 Agent Skills for Claude Code, Codex, and compatible runtimes. It includes
@@ -23,7 +24,7 @@ focused workflows for risk assessment, agent and capability design, Temporal
 execution, evals, production operations, and readiness reviews, with examples
 and supporting references.
 
-## Development Toolkit
+### Development Toolkit
 
 [`agentctl`](tools/agentctl/README.md) turns the standard into executable guardrails. It scaffolds agent packages, validates Agent Specs, risk assessments, and skills, runs version-pinned eval adapters, records provenance, and applies fail-closed release gates.
 
@@ -31,7 +32,7 @@ and supporting references.
 scripts/agentctl --help
 ```
 
-## Reproducible Development
+## Development
 
 The repository uses one root [uv](https://docs.astral.sh/uv/) workspace and
 lockfile for Python dependencies, plus a pinned [Nix](https://nixos.org/) flake
@@ -54,3 +55,9 @@ uv run --locked python -m unittest discover -s tools/agentctl/tests
 
 Use `uv lock --check` and `nix flake check` in CI to reject dependency or flake
 drift.
+
+## Status
+
+The Agent Playbook is currently **v0.3 — draft**. Feedback and contributions
+are welcome through [issues](https://github.com/X-McKay/playbooks/issues) and
+[pull requests](https://github.com/X-McKay/playbooks/pulls).
