@@ -77,5 +77,5 @@ are welcome through [issues](https://github.com/X-McKay/playbooks/issues) and
 The [initial repository review](docs/reviews/initial-review/README.md) records
 prioritized findings, external research, reproducible validation probes, and a
 proposed improvement roadmap against the reviewed commit.
-The [backlog](backlog/README.md) tracks the resulting architecture and governance
-decisions for maintainer consideration.
+The [backlog](backlog/README.md) tracks the resulting implementation changes,
+runtime and repository improvements, and architecture and governance decisions.

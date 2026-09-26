@@ -76,6 +76,9 @@ gate and ambiguity about what a passing command proves.
 
 ## Findings requiring changes
 
+All ten findings are tracked in the
+[implementation backlog](../../../backlog/implementation-changes.md).
+
 ### F01 — P1: Release policy omissions silently remove gates
 
 **Evidence:** [release.py](../../../tools/agentctl/src/agentctl/release.py),
@@ -483,6 +486,9 @@ take precedence; these are additional editing targets.
 | 13 — Risk | Calibrate likelihood horizon, validate freshness/floors, and verify evidence. | Add a schema; verify member digests/status, floors, score reductions, and conditional acceptance. |
 
 ## Repository and tooling roadmap
+
+The technical additions, chapter opportunities, and roadmap below are tracked
+in the [runtime and repository backlog](../../../backlog/repository-improvements.md).
 
 ### First batch: correctness and truthful guarantees
 
