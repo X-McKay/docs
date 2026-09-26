@@ -1,7 +1,7 @@
 # Agent Playbook
 
 - **Status:** Draft
-- **Version:** 0.2
+- **Version:** 0.3
 - **Last updated:** 2026-09-25
 
 This playbook defines a production standard for building AI agents with [PydanticAI](https://pydantic.dev/docs/ai/) and [Temporal](https://docs.temporal.io/). It treats an agent as a governed software system: a typed contract, a constrained set of capabilities, a durable execution model when required, and measurable quality, safety, reliability, and cost.
@@ -27,7 +27,7 @@ The playbook is intentionally opinionated. Teams may adopt stricter controls. Ex
 
 ## Executable guidance
 
-The companion [Agent Development Skills](../skills/README.md) translate this standard into focused workflows for Claude Code, Codex, and compatible Agent Skills clients. [`agentctl`](../tools/agentctl/README.md) provides the executable golden path for scaffolding, contract and skill validation, eval adapters, provenance, and release gates.
+The companion [Agent Development Skills](../skills/README.md) translate this standard into focused workflows for Claude Code, Codex, and compatible Agent Skills clients. [`agentctl`](../tools/agentctl/README.md) provides the executable golden path for scaffolding, Agent Spec, risk-contract, and skill validation, eval adapters, provenance, and release gates.
 
 ## Normative language
 

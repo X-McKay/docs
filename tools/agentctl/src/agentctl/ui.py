@@ -150,6 +150,58 @@ def diagnostics_table(items: Iterable[Any], *, heading_text: str) -> None:
     _console.print(table)
 
 
+def risk_report(payload: dict[str, Any], *, path: str) -> None:
+    assessment = payload["assessment"]
+    classification = payload["classification"]
+    summary = Table.grid(padding=(0, 1))
+    summary.add_column(style="agentctl.muted", justify="right")
+    summary.add_column(style="agentctl.path")
+    for label, value in (
+        ("Agent", f"{assessment['agent']} {assessment['agent_version']}"),
+        ("Assessment", assessment["assessment_version"]),
+        ("Status", assessment["status"]),
+        ("Governance", classification["governance_tier"]),
+        ("Inherent", classification["maximum_inherent_tier"]),
+        ("Residual", classification["maximum_residual_tier"]),
+        ("Decision", classification["decision"]),
+        ("Review by", assessment["review_by"]),
+        ("Source", path),
+    ):
+        summary.add_row(label, str(value))
+    _console.print(
+        Panel(
+            summary,
+            title="[agentctl.brand]Agent risk profile[/agentctl.brand]",
+            border_style="bright_cyan",
+            padding=(0, 1),
+        )
+    )
+
+    scenarios = Table(
+        title="Risk scenarios",
+        title_style="agentctl.brand",
+        header_style="bold",
+        border_style="bright_black",
+        expand=True,
+    )
+    scenarios.add_column("ID", style="agentctl.path", no_wrap=True)
+    scenarios.add_column("Dimension", no_wrap=True)
+    scenarios.add_column("Inherent", justify="center", no_wrap=True)
+    scenarios.add_column("Residual", justify="center", no_wrap=True)
+    scenarios.add_column("Treatment", no_wrap=True)
+    scenarios.add_column("Title", ratio=2)
+    for scenario in payload["scenarios"]:
+        scenarios.add_row(
+            scenario["id"],
+            scenario["primary_dimension"].replace("_", " "),
+            scenario["inherent"]["tier"],
+            scenario["residual"]["tier"],
+            scenario["treatment"],
+            scenario["title"],
+        )
+    _console.print(scenarios)
+
+
 def json_error(message: str) -> None:
     import json
 

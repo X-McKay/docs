@@ -272,3 +272,26 @@ record, and production traces record its version or digest.
 The assessment is complete only when scope, scenarios, controls, evidence,
 classification, acceptance, and review dates are populated and approved by the
 required owners.
+
+## Executable contract
+
+The companion `agentctl` package publishes the canonical Draft 2020-12 JSON
+Schema and adds semantic checks that JSON Schema cannot express, including the
+risk matrix, maximum-tier summaries, governance floors, prohibited-use and
+critical-residual decisions, duplicate identifiers, date ordering, assessment
+references, and verified evidence for claimed risk reduction.
+
+```bash
+# Validate every canonical assessment in a project.
+scripts/agentctl risk validate --root /path/to/project
+
+# Validate or explain a specific artifact.
+scripts/agentctl risk validate docs/risk-assessments/customer-support.yaml
+scripts/agentctl risk explain docs/risk-assessments/customer-support.yaml
+scripts/agentctl risk explain docs/risk-assessments/customer-support.yaml \
+  --format json
+```
+
+`agentctl validate` applies the same contract through the Agent Spec reference
+and additionally checks that the agent name, agent version, execution class,
+and governance tier agree across both artifacts.

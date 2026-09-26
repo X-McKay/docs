@@ -11,6 +11,7 @@ from rich_argparse import RichHelpFormatter
 from agentctl import __version__
 from agentctl.evals import run_eval_command
 from agentctl.release import check_release
+from agentctl.risk import explain_risk_assessment, validate_risk_assessments
 from agentctl.scaffold import scaffold_agent
 from agentctl.skills import validate_skills
 from agentctl.ui import configure, console_options, error, json_error
@@ -115,6 +116,23 @@ def build_parser() -> argparse.ArgumentParser:
     skills_validate.add_argument("--format", choices=("text", "json"), default="text")
     skills_validate.add_argument("--run-skills-ref", action="store_true")
 
+    risk = commands.add_parser("risk", help="assess and inspect agent risk")
+    risk_commands = risk.add_subparsers(
+        dest="risk_command", required=True, parser_class=AgentArgumentParser
+    )
+    risk_validate = risk_commands.add_parser(
+        "validate", help="validate risk assessment artifacts"
+    )
+    risk_validate.add_argument("paths", nargs="*", type=Path)
+    risk_validate.add_argument("--root", type=Path, default=Path.cwd())
+    risk_validate.add_argument("--format", choices=("text", "json"), default="text")
+    risk_explain = risk_commands.add_parser(
+        "explain", help="show a risk assessment summary"
+    )
+    risk_explain.add_argument("path", type=Path)
+    risk_explain.add_argument("--root", type=Path, default=Path.cwd())
+    risk_explain.add_argument("--format", choices=("text", "json"), default="text")
+
     eval_parser = commands.add_parser("eval", help="run standardized evaluations")
     eval_commands = eval_parser.add_subparsers(
         dest="eval_command", required=True, parser_class=AgentArgumentParser
@@ -164,6 +182,18 @@ def main(argv: list[str] | None = None) -> int:
                 paths=args.paths,
                 output_format=args.format,
                 run_reference_validator=args.run_skills_ref,
+            )
+        if args.command == "risk" and args.risk_command == "validate":
+            return validate_risk_assessments(
+                root=args.root,
+                paths=args.paths,
+                output_format=args.format,
+            )
+        if args.command == "risk" and args.risk_command == "explain":
+            return explain_risk_assessment(
+                root=args.root,
+                path=args.path,
+                output_format=args.format,
             )
         if args.command == "eval" and args.eval_command == "run":
             return run_eval_command(args)

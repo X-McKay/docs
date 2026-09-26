@@ -1,6 +1,6 @@
 # agentctl
 
-`agentctl` is the executable companion to the Agent Playbook. It scaffolds the golden path, validates contracts and Agent Skills, runs version-pinned eval adapters, and applies fail-closed release gates.
+`agentctl` is the executable companion to the Agent Playbook. It scaffolds the golden path, validates agent and risk contracts, validates Agent Skills, runs version-pinned eval adapters, and applies fail-closed release gates.
 
 ## Install or run locally
 
@@ -64,7 +64,31 @@ scripts/agentctl validate --root /path/to/project
 scripts/agentctl validate --root /path/to/project --format json
 ```
 
-Validation covers required Agent Spec metadata, semantic versions, execution and risk classes, budgets, Temporal structure, approval policy, threat-model presence, eval policy, capability existence, tool effect, retry safety, authorization declarations, timeouts, and output bounds.
+Validation covers required Agent Spec metadata, semantic versions, execution and risk classes, budgets, Temporal structure, approval policy, threat-model presence, eval policy, capability existence, tool effect, retry safety, authorization declarations, timeouts, output bounds, and consistency with the referenced risk assessment.
+
+## Validate and explain risk assessments
+
+Risk assessments are governed by the packaged Draft 2020-12 JSON Schema and
+semantic checks for the risk matrix, classification summaries, governance
+floors, prohibited uses, control evidence, identifiers, and dates.
+
+```bash
+# Discover assessments under docs/risk-assessments.
+scripts/agentctl risk validate --root /path/to/project
+
+# Validate one file or recursively validate a directory.
+scripts/agentctl risk validate docs/risk-assessments/customer-support.yaml
+scripts/agentctl risk validate docs/risk-assessments --format json
+
+# Show a human-readable profile or a stable JSON envelope.
+scripts/agentctl risk explain docs/risk-assessments/customer-support.yaml
+scripts/agentctl risk explain docs/risk-assessments/customer-support.yaml --format json
+```
+
+Schema and semantic errors exit `1`. Draft status and unresolved questions are
+reported as warnings and do not make the standalone risk command fail. Normal
+Agent Spec validation also validates its referenced assessment and enforces
+matching agent name, version, execution class, and governance tier.
 
 ## Validate Agent Skills
 
@@ -147,6 +171,7 @@ Missing gates or metrics fail closed. When a policy defines regressions, an appr
   run: |
     uv sync --locked
     uv run --locked agentctl --no-animations validate
+    uv run --locked agentctl --no-animations risk validate
     uv run --locked agentctl --no-animations skills validate
 
 - name: Run smoke evals and release gates

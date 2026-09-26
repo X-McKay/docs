@@ -13,7 +13,7 @@ The [Agent Playbook](agent-playbook/README.md) defines an opinionated standard f
 - Evaluation, observability, and cost controls
 - Security, governance, and production readiness
 
-The current version is **v0.2 — draft**.
+The current version is **v0.3 — draft**.
 
 ## Agent Development Skills
 
@@ -25,7 +25,7 @@ and supporting references.
 
 ## Development Toolkit
 
-[`agentctl`](tools/agentctl/README.md) turns the standard into executable guardrails. It scaffolds agent packages, validates Agent Specs and skills, runs version-pinned eval adapters, records provenance, and applies fail-closed release gates.
+[`agentctl`](tools/agentctl/README.md) turns the standard into executable guardrails. It scaffolds agent packages, validates Agent Specs, risk assessments, and skills, runs version-pinned eval adapters, records provenance, and applies fail-closed release gates.
 
 ```bash
 scripts/agentctl --help

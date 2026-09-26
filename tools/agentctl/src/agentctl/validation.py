@@ -7,6 +7,7 @@ from typing import Any
 
 from agentctl.diagnostics import Diagnostic, emit_diagnostics, relative_display
 from agentctl.files import DataFileError, load_data
+from agentctl.risk import validate_risk_file
 
 EXECUTION_CLASSES = ("ephemeral", "durable", "human_governed")
 EXECUTION_RANK = {name: rank for rank, name in enumerate(EXECUTION_CLASSES)}
@@ -100,6 +101,7 @@ def _validate_spec(path: Path, root: Path) -> list[Diagnostic]:
         "version",
         "execution_class",
         "risk_tier",
+        "risk_assessment",
         "data_classification",
         "model_policy",
         "enabled_skills",
@@ -130,6 +132,38 @@ def _validate_spec(path: Path, root: Path) -> list[Diagnostic]:
     risk_tier = metadata.get("risk_tier")
     if risk_tier not in RISK_TIERS:
         error("AGENT012", "metadata.risk_tier must be low, medium, high, or critical")
+    risk_assessment = metadata.get("risk_assessment")
+    if not _nonempty_string(risk_assessment):
+        error("AGENT035", "metadata.risk_assessment must reference an assessment")
+    else:
+        risk_path = root / risk_assessment
+        if not risk_path.is_file():
+            error("AGENT036", "risk assessment does not exist", risk_path)
+        else:
+            risk_diagnostics = validate_risk_file(risk_path, root=root)
+            errors.extend(risk_diagnostics)
+            if not any(item.severity == "error" for item in risk_diagnostics):
+                risk = load_data(risk_path)
+                assessment = risk["assessment"]
+                classification = risk["classification"]
+                scope = risk["scope"]
+                if assessment["agent"] != name:
+                    error("AGENT037", "risk assessment agent does not match Agent Spec")
+                if assessment["agent_version"] != version:
+                    error(
+                        "AGENT038",
+                        "risk assessment agent_version does not match Agent Spec",
+                    )
+                if scope["execution_class"] != execution_class:
+                    error(
+                        "AGENT039",
+                        "risk assessment execution_class does not match Agent Spec",
+                    )
+                if classification["governance_tier"] != risk_tier:
+                    error(
+                        "AGENT040",
+                        "risk assessment governance_tier does not match metadata.risk_tier",
+                    )
     if not _nonempty_string(metadata.get("model_policy")):
         error("AGENT013", "metadata.model_policy must be a versioned logical policy")
     elif not re.search(r"-v\d+$", metadata["model_policy"]):

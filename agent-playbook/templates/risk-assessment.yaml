@@ -5,8 +5,8 @@ assessment:
   agent_version: 1.0.0
   assessment_version: 1.0.0
   status: draft # draft | approved | rejected | retired
-  assessed_at: 2026-09-25
-  review_by: 2027-03-25
+  assessed_at: "2026-09-25"
+  review_by: "2027-03-25"
   prepared_by: customer-platform
   approved_by: []
 
@@ -26,6 +26,32 @@ scope:
     - replace-with-applicable-jurisdictions
   execution_class: durable
 
+dimension_review:
+  financial:
+    status: applicable
+    rationale: Incorrect resolutions could create refunds, credits, or liability.
+  operational:
+    status: applicable
+    rationale: Incorrect outcomes could disrupt support processes and records.
+  reputational:
+    status: applicable
+    rationale: Incorrect or harmful responses could reduce customer trust.
+  legal:
+    status: applicable
+    rationale: Customer communications and actions may create legal exposure.
+  security:
+    status: applicable
+    rationale: The agent uses authenticated access to customer systems.
+  privacy:
+    status: applicable
+    rationale: The agent processes confidential customer information.
+  regulatory:
+    status: applicable
+    rationale: Applicable consumer and sector obligations require review.
+  human_impact_safety:
+    status: applicable
+    rationale: Incorrect support outcomes may materially affect customers.
+
 regulatory_screen:
   prohibited_use: false
   applicable_regimes: []
@@ -38,13 +64,14 @@ regulatory_screen:
 classification:
   governance_tier: medium
   maximum_inherent_tier: medium
-  maximum_residual_tier: low
+  maximum_residual_tier: medium
   decision: conditional_go # go | conditional_go | no_go
   rationale: Launch only after the linked tenant-isolation evidence passes.
 
 scenarios:
   - id: RISK-PRIV-001
     title: Cross-tenant customer record disclosure
+    status: open
     statement: >-
       Because retrieved content can contain adversarial instructions, the agent
       could request a record outside the authenticated tenant, causing privacy,
@@ -56,9 +83,17 @@ scenarios:
       - reputational
     affected_parties:
       - customers
+    affected_assets:
+      - customer records
     causes:
       - indirect prompt injection
       - missing tenant binding at tool execution
+    preconditions:
+      - untrusted retrieved content reaches the model context
+      - a record tool receives a tenant identifier from model output
+    consequences:
+      - confidential customer information is disclosed across tenants
+      - customers and the organization incur privacy, legal, and trust harm
     inherent:
       impact: 3
       likelihood: 2
@@ -97,8 +132,8 @@ acceptance:
     - id: CONDITION-001
       requirement: AUTH-021 passes with zero unauthorized calls.
       owner: customer-platform
-      due_by: 2026-10-01
-  expires_at: 2027-03-25
+      due_by: "2026-10-01"
+  expires_at: "2027-03-25"
   rationale: Pending approval after required evidence is complete.
 
 assumptions:

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import re
+from datetime import date, timedelta
 from pathlib import Path
 
 from agentctl.ui import status, step, success
@@ -42,6 +43,9 @@ def scaffold_agent(args: argparse.Namespace) -> int:
         agent_dir / "instructions" / "base.md": _instructions(args.name),
         agent_dir / "skills" / ".gitkeep": "",
         agent_dir / "tools" / ".gitkeep": "",
+        root / "docs" / "risk-assessments" / f"{args.name}.yaml": _risk_assessment(
+            args
+        ),
     }
 
     _add_if_missing(files, root / "src" / args.package / "__init__.py", "")
@@ -106,6 +110,7 @@ metadata:
   version: 0.1.0
   execution_class: {args.execution_class}
   risk_tier: {args.risk_tier}
+  risk_assessment: docs/risk-assessments/{args.name}.yaml
   data_classification: internal
   model_policy: balanced-v1
   temporal_enabled: {str(temporal).lower()}
@@ -249,6 +254,138 @@ Document models, tools, retrieval, Temporal, approvals, telemetry, and operators
 ## Threats and controls
 
 For every material threat, record preventive, detective, and recovery controls.
+"""
+
+
+def _risk_assessment(args: argparse.Namespace) -> str:
+    impact, likelihood = {
+        "low": (1, 1),
+        "medium": (2, 2),
+        "high": (2, 4),
+        "critical": (3, 4),
+    }[args.risk_tier]
+    assessed_at = date.today()
+    review_days = {"low": 365, "medium": 180, "high": 90, "critical": 30}
+    review_by = assessed_at + timedelta(days=review_days[args.risk_tier])
+    decision = "no_go" if args.risk_tier == "critical" else "conditional_go"
+    dimension_review = "\n".join(
+        f"  {dimension}:\n"
+        "    status: applicable\n"
+        f"    rationale: Review the {dimension.replace('_', ' ')} dimension for this use case."
+        for dimension in (
+            "financial",
+            "operational",
+            "reputational",
+            "legal",
+            "security",
+            "privacy",
+            "regulatory",
+            "human_impact_safety",
+        )
+    )
+    return f"""schema_version: 1
+
+assessment:
+  agent: {args.name}
+  agent_version: 0.1.0
+  assessment_version: 0.1.0
+  status: draft
+  assessed_at: "{assessed_at.isoformat()}"
+  review_by: "{review_by.isoformat()}"
+  prepared_by: {args.owner}
+  approved_by: []
+
+scope:
+  intended_use: Replace with the agent's bounded intended use.
+  prohibited_uses:
+    - Operate outside the reviewed scope or authorization boundary.
+  users:
+    - replace-with-intended-users
+  affected_parties:
+    - replace-with-affected-parties
+  environments:
+    - development
+  jurisdictions:
+    - replace-with-applicable-jurisdictions
+  execution_class: {args.execution_class}
+
+dimension_review:
+{dimension_review}
+
+regulatory_screen:
+  prohibited_use: false
+  applicable_regimes: []
+  required_reviews: []
+  governance_floors: []
+  notes: Complete legal and regulatory applicability review before approval.
+
+classification:
+  governance_tier: {args.risk_tier}
+  maximum_inherent_tier: {args.risk_tier}
+  maximum_residual_tier: {args.risk_tier}
+  decision: {decision}
+  rationale: Draft classification generated from the selected governance tier.
+
+scenarios:
+  - id: RISK-OP-001
+    title: Incorrect or incomplete agent outcome
+    status: open
+    statement: >-
+      Because model or dependency behavior may be incorrect, the agent could
+      produce an incorrect or incomplete outcome, causing harm to affected
+      users or dependent operations.
+    primary_dimension: operational
+    secondary_dimensions: []
+    affected_parties:
+      - replace-with-affected-parties
+    affected_assets:
+      - replace-with-affected-assets
+    causes:
+      - model error
+      - dependency failure
+    preconditions:
+      - The agent receives a request within its intended scope.
+    consequences:
+      - An affected party or dependent operation receives an incorrect outcome.
+    inherent:
+      impact: {impact}
+      likelihood: {likelihood}
+      tier: {args.risk_tier}
+      confidence: low
+      rationale: Replace with evidence-based inherent-risk rationale.
+    controls: []
+    residual:
+      impact: {impact}
+      likelihood: {likelihood}
+      tier: {args.risk_tier}
+      confidence: low
+      rationale: No risk reduction is credited until controls are verified.
+    treatment: mitigate
+    owner: {args.owner}
+    eval_cases:
+      - RISK-OP-001
+    indicators:
+      - agent_failure_count
+    alerts:
+      - material agent failure detected
+    runbook: docs/runbooks/{args.name}.md
+
+acceptance:
+  accountable_role: replace-with-risk-authority
+  accepted_scenarios: []
+  conditions:
+    - id: CONDITION-001
+      requirement: Complete the assessment and required control evidence.
+      owner: {args.owner}
+      due_by: "{review_by.isoformat()}"
+  expires_at: "{review_by.isoformat()}"
+  rationale: Draft assessment is not accepted for production.
+
+assumptions:
+  - Replace generated assumptions with reviewed use-case assumptions.
+
+open_questions:
+  - Which additional material harm scenarios apply to this agent?
 """
 
 
