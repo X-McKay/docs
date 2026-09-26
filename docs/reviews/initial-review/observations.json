@@ -1,0 +1,111 @@
+{
+  "reviewed_commit": "6b987e65bafe744d115d1a1925adc260681a9592",
+  "observations": [
+    {
+      "probe": "empty_release_policy",
+      "expected_safe_behavior": "Reject an empty release policy",
+      "exit_code": 0,
+      "diagnostics": []
+    },
+    {
+      "probe": "unknown_policy_section",
+      "expected_safe_behavior": "Reject unsupported quality section rather than ignore it",
+      "exit_code": 0,
+      "diagnostics": []
+    },
+    {
+      "probe": "nan_threshold_metric",
+      "expected_safe_behavior": "Reject non-finite metric",
+      "exit_code": 0,
+      "diagnostics": []
+    },
+    {
+      "probe": "expired_no_go_agent_contract",
+      "expected_safe_behavior": "Production readiness must reject expired/no_go assessments; structural mode must be labeled",
+      "exit_code": 0,
+      "diagnostics": [
+        "RISK101",
+        "RISK102"
+      ]
+    },
+    {
+      "probe": "placeholder_system_contract",
+      "expected_safe_behavior": "Distinguish structural validation from production readiness",
+      "exit_code": 0,
+      "diagnostics": [
+        "RISK101",
+        "RISK102",
+        "RISK101",
+        "RISK102",
+        "SYSRISK101",
+        "SYSRISK102"
+      ]
+    },
+    {
+      "probe": "empty_delegation_policy",
+      "expected_safe_behavior": "Reject a policy with no declared interaction contracts",
+      "exit_code": 0,
+      "diagnostics": [
+        "RISK101",
+        "RISK102",
+        "RISK101",
+        "RISK102",
+        "SYSRISK101",
+        "SYSRISK102"
+      ]
+    },
+    {
+      "probe": "unresolved_interaction_schema",
+      "expected_safe_behavior": "Resolve the declared schema or report that it was not checked",
+      "exit_code": 0,
+      "diagnostics": [
+        "RISK101",
+        "RISK102",
+        "RISK101",
+        "RISK102",
+        "SYSRISK101",
+        "SYSRISK102"
+      ]
+    },
+    {
+      "probe": "ignored_system_governance_floor",
+      "expected_safe_behavior": "Reject medium governance below declared high floor",
+      "exit_code": 0,
+      "diagnostics": [
+        "RISK101",
+        "RISK102",
+        "RISK101",
+        "RISK102",
+        "SYSRISK101",
+        "SYSRISK102"
+      ]
+    },
+    {
+      "probe": "malformed_system_risk",
+      "expected_safe_behavior": "Return a structured diagnostic without an exception",
+      "exception": "AttributeError",
+      "message": "'list' object has no attribute 'get'"
+    },
+    {
+      "probe": "minimal_system_release_evidence",
+      "expected_safe_behavior": "Production system release requires composition, member, safety, baseline, and risk evidence",
+      "exit_code": 0,
+      "diagnostics": []
+    },
+    {
+      "probe": "consequential_tool_low_governance",
+      "expected_safe_behavior": "Reject consequential action below high governance floor",
+      "exit_code": 0,
+      "diagnostics": [
+        "RISK101",
+        "RISK102"
+      ]
+    },
+    {
+      "probe": "skill_name_over_64_characters",
+      "expected_safe_behavior": "Reject names longer than the Agent Skills limit",
+      "exit_code": 0,
+      "diagnostics": []
+    }
+  ]
+}
